@@ -3,214 +3,374 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Soter CRM — Pipeline Comercial</title>
+<title>Soter CRM</title>
 <style>
-  :root {
-    --verde-osc:#0F6E56;--verde-med:#1D9E75;--verde-clar:#E1F5EE;
-    --azul-osc:#185FA5;--azul-med:#378ADD;--azul-clar:#E6F1FB;
-    --morado-osc:#534AB7;--morado-med:#7F77DD;--morado-clar:#EEEDFE;
-    --amber-osc:#854F0B;--amber-med:#EF9F27;--amber-clar:#FAEEDA;
-    --rojo-osc:#A32D2D;--rojo-clar:#FCEBEB;
-    --gris-osc:#444441;--gris-clar:#F1EFE8;
-    --bg:#ffffff;--bg2:#f8f9fa;--bg3:#f1f0ee;
-    --text:#1a1a18;--text2:#5f5e5a;--text3:#888780;
-    --border:#e0ddd6;--border2:#c8c5be;
-    --r:10px;--rs:6px;
-    --sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.10);
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--text);font-size:14px;min-height:100vh;}
-  .topbar{background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:var(--sh);}
-  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;}
-  .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--verde-med);}
-  .logo-sub{font-weight:400;font-size:12px;color:var(--text3);}
-  .role-sw{display:flex;gap:6px;}
-  .rpill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);color:var(--text2);background:var(--bg2);transition:all .15s;user-select:none;}
-  .rpill.ra{background:var(--verde-clar);color:var(--verde-osc);border-color:var(--verde-med);}
-  .rpill.rb{background:var(--azul-clar);color:var(--azul-osc);border-color:var(--azul-med);}
-  .rpill.rc{background:var(--morado-clar);color:var(--morado-osc);border-color:var(--morado-med);}
-  .tabs{background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:4px;}
-  .tab{padding:12px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;}
-  .tab:hover{color:var(--text);}
-  .tab.active{color:var(--verde-osc);border-bottom-color:var(--verde-osc);}
-  .tbadge{background:var(--rojo-clar);color:var(--rojo-osc);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:5px;font-weight:700;}
-  .main{padding:24px;max-width:1400px;margin:0 auto;}
-  .panel{display:none;}.panel.active{display:block;}
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-  .stat{background:var(--bg);border-radius:var(--r);border:1px solid var(--border);padding:16px 20px;box-shadow:var(--sh);}
-  .stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
-  .stat-val{font-size:26px;font-weight:700;line-height:1;}
-  .stat-sub{font-size:11px;color:var(--text3);margin-top:4px;}
-  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-  .sec-title{font-size:16px;font-weight:700;}
-  .btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;}
-  .btn-p{background:var(--verde-clar);color:var(--verde-osc);border-color:var(--verde-med);}
-  .btn-p:hover{background:var(--verde-med);color:#fff;}
-  .btn-g{background:transparent;color:var(--text2);border-color:var(--border2);}
-  .btn-g:hover{background:var(--bg2);}
-  .pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-  .pcol{background:var(--bg2);border-radius:var(--r);border:1px solid var(--border);padding:14px;min-height:320px;}
-  .pcol-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-  .pcol-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);}
-  .pcnt{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
-  .cl{background:var(--azul-clar);color:var(--azul-osc);}
-  .cn{background:var(--amber-clar);color:var(--amber-osc);}
-  .ca{background:var(--verde-clar);color:var(--verde-osc);}
-  .cc{background:var(--gris-clar);color:var(--gris-osc);}
-  .kcard{background:var(--bg);border-radius:var(--rs);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
-  .kcard:hover{border-color:var(--border2);box-shadow:var(--sh);transform:translateY(-1px);}
-  .kcard.sel{border-color:var(--verde-med);box-shadow:0 0 0 2px var(--verde-clar);}
-  .kcard-name{font-size:13px;font-weight:600;margin-bottom:6px;}
-  .kcard-row{display:flex;align-items:center;justify-content:space-between;}
-  .op{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
-  .oa{background:var(--verde-clar);color:var(--verde-osc);}
-  .ob{background:var(--azul-clar);color:var(--azul-osc);}
-  .oc{background:var(--morado-clar);color:var(--morado-osc);}
-  .kval{font-size:12px;font-weight:600;color:var(--verde-osc);}
-  .add-col{width:100%;margin-top:4px;padding:8px;font-size:12px;color:var(--text3);border:1.5px dashed var(--border2);border-radius:var(--rs);background:transparent;cursor:pointer;transition:all .15s;}
-  .add-col:hover{background:var(--bg);color:var(--text);border-color:var(--verde-med);}
-  .dw{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-top:18px;box-shadow:var(--shm);}
-  .dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
-  .dn{font-size:18px;font-weight:700;}
-  .xbtn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);line-height:1;}
-  .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-  .df{background:var(--bg2);border-radius:var(--rs);padding:10px 14px;}
-  .df label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);display:block;margin-bottom:3px;}
-  .df span{font-size:14px;font-weight:600;}
-  .cbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-  .cb{border-radius:var(--rs);padding:12px 14px;}
-  .cba{background:var(--verde-clar);}.cbb{background:var(--azul-clar);}.cbc{background:var(--morado-clar);}
-  .cb label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;}
-  .cba label{color:var(--verde-osc);}.cbb label{color:var(--azul-osc);}.cbc label{color:var(--morado-osc);}
-  .cb span{font-size:18px;font-weight:700;}
-  .cba span{color:var(--verde-osc);}.cbb span{color:var(--azul-osc);}.cbc span{color:var(--morado-osc);}
-  .stage-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-  .sbtn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);transition:all .15s;}
-  .sbtn:hover{background:var(--bg3);}
-  .sbtn.sact{background:var(--verde-clar);color:var(--verde-osc);border-color:var(--verde-med);}
-  .nexo{background:var(--azul-clar);color:var(--azul-osc);border-radius:var(--rs);padding:8px 12px;font-size:12px;margin-bottom:10px;}
-  .warn{background:var(--amber-clar);color:var(--amber-osc);border-radius:var(--rs);padding:8px 12px;font-size:12px;margin-bottom:10px;}
-  .cstruct{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:20px;box-shadow:var(--sh);}
-  .cst-title{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:14px;}
-  .cst-row{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
-  .cst-label{width:160px;font-size:13px;font-weight:600;flex-shrink:0;}
-  .cbar{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
-  .cbf{height:100%;border-radius:4px;}
-  .bra{background:var(--verde-med);}.brb{background:var(--azul-med);}.brc{background:var(--morado-med);}
-  .cpct{font-size:13px;font-weight:700;width:44px;text-align:right;flex-shrink:0;}
-  .cpa{color:var(--verde-osc);}.cpb{color:var(--azul-osc);}.cpc{color:var(--morado-osc);}
-  .tw{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
-  table{width:100%;border-collapse:collapse;}
-  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;padding:10px 14px;background:var(--bg2);color:var(--text3);text-align:left;border-bottom:1px solid var(--border);}
-  td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;}
-  tr:last-child td{border-bottom:none;}
-  tr:hover td{background:var(--bg2);}
-  .sp{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
-  .spp{background:var(--amber-clar);color:var(--amber-osc);}
-  .spc{background:var(--verde-clar);color:var(--verde-osc);}
-  .al{border-radius:var(--rs);padding:12px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;}
-  .alev{background:var(--amber-clar);border:1px solid var(--amber-med);}
-  .albp{background:var(--rojo-clar);border:1px solid #e24b4a;}
-  .al-body{flex:1;}
-  .al-title{font-size:13px;font-weight:600;}
-  .al-desc{font-size:12px;margin-top:2px;}
-  .alev .al-title,.alev .al-desc{color:var(--amber-osc);}
-  .albp .al-title,.albp .al-desc{color:var(--rojo-osc);}
-  .alcls{background:none;border:none;font-size:18px;cursor:pointer;color:inherit;opacity:.5;}
-  .alcls:hover{opacity:1;}
-  .empty{text-align:center;padding:48px;color:var(--text3);}
-  .cgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
-  .ccard{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);cursor:pointer;transition:all .15s;}
-  .ccard:hover{box-shadow:var(--shm);transform:translateY(-1px);}
-  .chead{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-  .av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
-  .av-a{background:var(--verde-clar);color:var(--verde-osc);}
-  .av-b{background:var(--azul-clar);color:var(--azul-osc);}
-  .av-c{background:var(--morado-clar);color:var(--morado-osc);}
-  .cmeta{display:flex;align-items:center;justify-content:space-between;}
-  .ptag{font-size:10px;color:var(--verde-osc);background:var(--verde-clar);padding:3px 8px;border-radius:4px;font-weight:600;}
-  .abanner{background:var(--amber-clar);border:1px solid var(--amber-med);border-radius:var(--rs);padding:10px 16px;font-size:12px;color:var(--amber-osc);margin-bottom:18px;}
-  .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:center;justify-content:center;}
-  .modal-ov.open{display:flex;}
-  .modal{background:var(--bg);border-radius:var(--r);border:1px solid var(--border);padding:28px;width:440px;max-width:95vw;box-shadow:var(--shm);}
-  .modal-title{font-size:18px;font-weight:700;margin-bottom:20px;}
-  .field{margin-bottom:14px;}
-  .field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:5px;font-weight:600;}
-  .field input,.field select{width:100%;padding:9px 12px;font-size:14px;border:1.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;transition:border-color .15s;}
-  .field input:focus,.field select:focus{outline:none;border-color:var(--verde-med);}
-  .mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
-  @media(max-width:900px){.pipeline{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.cgrid{grid-template-columns:1fr}.dgrid{grid-template-columns:1fr}.cbs{grid-template-columns:1fr}}
-  @media(max-width:600px){.pipeline{grid-template-columns:1fr}.topbar{padding:0 14px}.main{padding:14px}.role-sw .rpill{padding:5px 10px;font-size:11px}}
+:root{
+  --va:#0F6E56;--vm:#1D9E75;--vc:#E1F5EE;
+  --ba:#185FA5;--bm:#378ADD;--bc:#E6F1FB;
+  --ma:#534AB7;--mm:#7F77DD;--mc:#EEEDFE;
+  --aa:#854F0B;--am:#EF9F27;--ac:#FAEEDA;
+  --ra:#A32D2D;--rc:#FCEBEB;
+  --ga:#444441;--gc:#F1EFE8;--gm:#888780;
+  --bg:#fff;--bg2:#f8f9fa;--bg3:#f1f0ee;
+  --tx:#1a1a18;--tx2:#5f5e5a;--tx3:#888780;
+  --bd:#e0ddd6;--bd2:#c8c5be;
+  --r:10px;--rs:6px;
+  --sh:0 1px 4px rgba(0,0,0,.08);--shm:0 4px 16px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--tx);font-size:14px;}
+
+/* TOP */
+.top{background:var(--bg);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:300;box-shadow:var(--sh);}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;}
+.ldot{width:10px;height:10px;border-radius:50%;background:var(--vm);}
+.lsub{font-weight:400;font-size:12px;color:var(--tx3);}
+.rsw{display:flex;gap:6px;}
+.rp{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bd2);color:var(--tx2);background:var(--bg2);transition:all .15s;user-select:none;}
+.rp.ra{background:var(--vc);color:var(--va);border-color:var(--vm);}
+.rp.rb{background:var(--bc);color:var(--ba);border-color:var(--bm);}
+.rp.rc{background:var(--mc);color:var(--ma);border-color:var(--mm);}
+
+/* TABS */
+.tabs{background:var(--bg);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;gap:2px;overflow-x:auto;}
+.tab{padding:12px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--tx3);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.tab:hover{color:var(--tx);}
+.tab.active{color:var(--va);border-bottom-color:var(--va);}
+.tbadge{background:var(--rc);color:var(--ra);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:5px;font-weight:700;}
+
+/* MAIN */
+.main{padding:24px;max-width:1440px;margin:0 auto;}
+.panel{display:none;}.panel.active{display:block;}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat{background:var(--bg);border-radius:var(--r);border:1px solid var(--bd);padding:16px 20px;box-shadow:var(--sh);}
+.slbl{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.sval{font-size:26px;font-weight:700;line-height:1;}
+.ssub{font-size:11px;color:var(--tx3);margin-top:4px;}
+
+/* SEC HEAD */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.stit{font-size:16px;font-weight:700;}
+.btns-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;white-space:nowrap;}
+.btn-p{background:var(--vc);color:var(--va);border-color:var(--vm);}
+.btn-p:hover{background:var(--vm);color:#fff;}
+.btn-g{background:transparent;color:var(--tx2);border-color:var(--bd2);}
+.btn-g:hover{background:var(--bg2);}
+.btn-r{background:var(--rc);color:var(--ra);border-color:#e24b4a;}
+.btn-r:hover{background:#e24b4a;color:#fff;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+
+/* FILTROS */
+.filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.fsel{padding:7px 12px;border-radius:var(--rs);border:1.5px solid var(--bd2);background:var(--bg);color:var(--tx2);font-size:12px;font-family:inherit;cursor:pointer;}
+.fsel:focus{outline:none;border-color:var(--vm);}
+
+/* PIPELINE */
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.pcol{background:var(--bg2);border-radius:var(--r);border:1px solid var(--bd);padding:14px;min-height:300px;}
+.pch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.pct{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);}
+.pcnt{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.cl{background:var(--bc);color:var(--ba);}
+.cn{background:var(--ac);color:var(--aa);}
+.ca{background:var(--vc);color:var(--va);}
+.cc{background:var(--gc);color:var(--ga);}
+
+/* CARDS */
+.kcard{background:var(--bg);border-radius:var(--rs);border:1px solid var(--bd);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;}
+.kcard:hover{border-color:var(--bd2);box-shadow:var(--sh);transform:translateY(-1px);}
+.kcard.sel{border-color:var(--vm);box-shadow:0 0 0 2px var(--vc);}
+.kcard-name{font-size:13px;font-weight:600;margin-bottom:6px;padding-right:20px;}
+.kcard-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.kcard-actions{position:absolute;top:8px;right:8px;display:none;gap:4px;}
+.kcard:hover .kcard-actions{display:flex;}
+.iac{background:none;border:none;cursor:pointer;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .1s;}
+.iac:hover{background:var(--bg3);}
+.op{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.oa{background:var(--vc);color:var(--va);}
+.ob{background:var(--bc);color:var(--ba);}
+.oc{background:var(--mc);color:var(--ma);}
+.kv{font-size:12px;font-weight:600;color:var(--va);}
+.add-col{width:100%;margin-top:4px;padding:8px;font-size:12px;color:var(--tx3);border:1.5px dashed var(--bd2);border-radius:var(--rs);background:transparent;cursor:pointer;transition:all .15s;}
+.add-col:hover{background:var(--bg);color:var(--tx);border-color:var(--vm);}
+
+/* DETAIL */
+.dw{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:22px;margin-top:18px;box-shadow:var(--shm);}
+.dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.dn{font-size:18px;font-weight:700;}
+.xbtn{background:none;border:none;font-size:24px;cursor:pointer;color:var(--tx3);line-height:1;padding:0 4px;}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.df{background:var(--bg2);border-radius:var(--rs);padding:10px 14px;}
+.df label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);display:block;margin-bottom:3px;}
+.df span{font-size:14px;font-weight:600;}
+.df.full{grid-column:1/-1;}
+.notes-box{width:100%;min-height:70px;padding:9px 12px;font-size:13px;border:1.5px solid var(--bd2);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-family:inherit;resize:vertical;margin-top:4px;}
+.notes-box:focus{outline:none;border-color:var(--vm);}
+
+/* COM BOXES */
+.cbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.cb{border-radius:var(--rs);padding:12px 14px;}
+.cba{background:var(--vc);}.cbb{background:var(--bc);}.cbc{background:var(--mc);}
+.cb label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;}
+.cba label{color:var(--va);}.cbb label{color:var(--ba);}.cbc label{color:var(--ma);}
+.cb span{font-size:18px;font-weight:700;}
+.cba span{color:var(--va);}.cbb span{color:var(--ba);}.cbc span{color:var(--ma);}
+
+/* ETAPAS */
+.stage-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.sbtn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);transition:all .15s;}
+.sbtn:hover{background:var(--bg3);}
+.sbtn.sact{background:var(--vc);color:var(--va);border-color:var(--vm);}
+.sbtn:disabled{opacity:.4;cursor:default;}
+
+/* NOTAS */
+.nexo{background:var(--bc);color:var(--ba);border-radius:var(--rs);padding:8px 12px;font-size:12px;margin-bottom:10px;border:1px solid var(--bm);}
+.warn{background:var(--ac);color:var(--aa);border-radius:var(--rs);padding:8px 12px;font-size:12px;margin-bottom:10px;border:1px solid var(--am);}
+
+/* TABLA COMISIONES */
+.cstruct{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:18px 20px;margin-bottom:20px;box-shadow:var(--sh);}
+.cst-t{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:14px;font-weight:700;}
+.csr{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.cslbl{width:180px;font-size:13px;font-weight:600;flex-shrink:0;}
+.cbar{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.cbf{height:100%;border-radius:4px;}
+.bra{background:var(--vm);}.brb{background:var(--bm);}.brc{background:var(--mm);}
+.cpct{font-size:13px;font-weight:700;width:48px;text-align:right;flex-shrink:0;}
+.cpa{color:var(--va);}.cpb{color:var(--ba);}.cpc{color:var(--ma);}
+
+/* FLUJO VISUAL */
+.flujo{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:16px 20px;margin-bottom:20px;box-shadow:var(--sh);flex-wrap:wrap;}
+.fnode{border-radius:var(--rs);padding:12px 18px;text-align:center;min-width:120px;}
+.fna{background:var(--vc);border:2px solid var(--vm);}
+.fnb{background:var(--bc);border:2px solid var(--bm);}
+.fnc{background:var(--mc);border:2px solid var(--mm);}
+.fnode .flbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:4px;}
+.fna .flbl{color:var(--va);}.fnb .flbl{color:var(--ba);}.fnc .flbl{color:var(--ma);}
+.fnode .fpct{font-size:20px;font-weight:800;}
+.fna .fpct{color:var(--va);}.fnb .fpct{color:var(--ba);}.fnc .fpct{color:var(--ma);}
+.fnode .fsub{font-size:11px;margin-top:2px;}
+.fna .fsub{color:var(--va);}.fnb .fsub{color:var(--ba);}.fnc .fsub{color:var(--ma);}
+.farrow{font-size:20px;color:var(--tx3);flex-shrink:0;}
+.fnote{font-size:11px;color:var(--tx3);flex:1;min-width:200px;line-height:1.5;}
+
+.tw{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;padding:10px 14px;background:var(--bg2);color:var(--tx3);text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid var(--bd);font-size:13px;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg2);}
+.sp{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.spp{background:var(--ac);color:var(--aa);}
+.spc{background:var(--vc);color:var(--va);}
+.spr{background:var(--rc);color:var(--ra);}
+
+/* ALERTAS */
+.al{border-radius:var(--rs);padding:12px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;}
+.alev{background:var(--ac);border:1px solid var(--am);}
+.albp{background:var(--rc);border:1px solid #e24b4a;}
+.al-bd{flex:1;}
+.al-ti{font-size:13px;font-weight:600;}
+.al-de{font-size:12px;margin-top:2px;}
+.alev .al-ti,.alev .al-de{color:var(--aa);}
+.albp .al-ti,.albp .al-de{color:var(--ra);}
+.alcls{background:none;border:none;font-size:20px;cursor:pointer;color:inherit;opacity:.5;flex-shrink:0;}
+.alcls:hover{opacity:1;}
+
+/* CLIENTES */
+.cgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.ccard{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);cursor:pointer;transition:all .15s;}
+.ccard:hover{box-shadow:var(--shm);transform:translateY(-1px);}
+.cch{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.av-a{background:var(--vc);color:var(--va);}
+.av-b{background:var(--bc);color:var(--ba);}
+.av-c{background:var(--mc);color:var(--ma);}
+.cmeta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.ptag{font-size:10px;color:var(--va);background:var(--vc);padding:3px 8px;border-radius:4px;font-weight:600;}
+.abanner{background:var(--ac);border:1px solid var(--am);border-radius:var(--rs);padding:10px 16px;font-size:12px;color:var(--aa);margin-bottom:18px;}
+
+/* MODAL */
+.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;}
+.mov.open{display:flex;}
+.modal{background:var(--bg);border-radius:var(--r);border:1px solid var(--bd);padding:28px;width:480px;max-width:95vw;box-shadow:var(--shm);max-height:90vh;overflow-y:auto;}
+.mt{font-size:18px;font-weight:700;margin-bottom:20px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:5px;font-weight:600;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;font-size:14px;border:1.5px solid var(--bd2);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-family:inherit;transition:border-color .15s;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--vm);}
+.mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+.empty{text-align:center;padding:48px;color:var(--tx3);}
+
+.del-conf{background:var(--rc);border:1px solid #e24b4a;border-radius:var(--rs);padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--ra);}
+
+@media(max-width:1100px){.pipeline{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.pipeline{grid-template-columns:1fr}.cgrid{grid-template-columns:1fr}.dgrid{grid-template-columns:1fr}.cbs{grid-template-columns:1fr}.top{padding:0 14px}.main{padding:14px}}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="logo"><div class="logo-dot"></div>Soter CRM<span class="logo-sub">Pipeline Comercial</span></div>
-  <div class="role-sw">
-    <div class="rpill ra" onclick="setRole('A')" id="pill-A">A · Soter Capital</div>
-    <div class="rpill" onclick="setRole('B')" id="pill-B">B · Sub-agente</div>
-    <div class="rpill" onclick="setRole('C')" id="pill-C">C · Sub-agente</div>
+
+<div class="top">
+  <div class="logo"><div class="ldot"></div>Soter CRM<span class="lsub">Pipeline Comercial</span></div>
+  <div class="rsw">
+    <div class="rp ra" onclick="setRole('A')" id="pill-A">A · Soter Capital</div>
+    <div class="rp" onclick="setRole('B')" id="pill-B">B · Sub-agente</div>
+    <div class="rp" onclick="setRole('C')" id="pill-C">C · Sub-agente</div>
   </div>
 </div>
+
 <div class="tabs">
   <div class="tab active" onclick="setTab('pipeline')" id="tab-pipeline">Pipeline</div>
   <div class="tab" onclick="setTab('comisiones')" id="tab-comisiones">Comisiones</div>
   <div class="tab" onclick="setTab('clientes')" id="tab-clientes">Clientes</div>
   <div class="tab" onclick="setTab('alertas')" id="tab-alertas">Alertas <span class="tbadge" id="abadge">0</span></div>
 </div>
+
 <div class="main">
+
+  <!-- PIPELINE -->
   <div class="panel active" id="panel-pipeline">
     <div class="stats" id="stats-row"></div>
-    <div class="sec-head"><div class="sec-title">Pipeline comercial</div><button class="btn btn-p" onclick="openModal()" id="add-btn">+ Nuevo lead</button></div>
+    <div class="sh">
+      <div class="stit">Pipeline comercial</div>
+      <div class="btns-row">
+        <button class="btn btn-g" onclick="exportCSV()">⬇ Exportar CSV</button>
+        <button class="btn btn-p" onclick="openModal()" id="add-btn">+ Nuevo lead</button>
+      </div>
+    </div>
+    <div class="filters">
+      <select class="fsel" id="f-captador-filter" onchange="render()">
+        <option value="">Todos los captadores</option>
+        <option value="A">A · Soter Capital</option>
+        <option value="B">B · Sub-agente</option>
+        <option value="C">C · Sub-agente</option>
+      </select>
+      <select class="fsel" id="f-etapa-filter" onchange="render()">
+        <option value="">Todas las etapas</option>
+        <option value="lead">Lead</option>
+        <option value="negociacion">Negociación</option>
+        <option value="activo">Cliente activo</option>
+        <option value="cerrado">Cerrado</option>
+      </select>
+      <select class="fsel" id="f-cobro-filter" onchange="render()">
+        <option value="">Todos los estados</option>
+        <option value="si">WhatsApp registrado</option>
+        <option value="no">Sin evidencia WhatsApp</option>
+      </select>
+      <button class="btn btn-g btn-sm" onclick="clearFilters()">✕ Limpiar filtros</button>
+    </div>
     <div class="pipeline">
-      <div class="pcol"><div class="pcol-hd"><span class="pcol-title">Lead</span><span class="pcnt cl" id="cnt-lead">0</span></div><div id="cards-lead"></div><button class="add-col" id="add-col" onclick="openModal()">+ Añadir lead</button></div>
-      <div class="pcol"><div class="pcol-hd"><span class="pcol-title">Negociación</span><span class="pcnt cn" id="cnt-negociacion">0</span></div><div id="cards-negociacion"></div></div>
-      <div class="pcol"><div class="pcol-hd"><span class="pcol-title">Cliente activo</span><span class="pcnt ca" id="cnt-activo">0</span></div><div id="cards-activo"></div></div>
-      <div class="pcol"><div class="pcol-hd"><span class="pcol-title">Cerrado</span><span class="pcnt cc" id="cnt-cerrado">0</span></div><div id="cards-cerrado"></div></div>
+      <div class="pcol"><div class="pch"><span class="pct">Lead</span><span class="pcnt cl" id="cnt-lead">0</span></div><div id="cards-lead"></div><button class="add-col" id="add-col" onclick="openModal()">+ Añadir lead</button></div>
+      <div class="pcol"><div class="pch"><span class="pct">Negociación</span><span class="pcnt cn" id="cnt-negociacion">0</span></div><div id="cards-negociacion"></div></div>
+      <div class="pcol"><div class="pch"><span class="pct">Cliente activo</span><span class="pcnt ca" id="cnt-activo">0</span></div><div id="cards-activo"></div></div>
+      <div class="pcol"><div class="pch"><span class="pct">Cerrado</span><span class="pcnt cc" id="cnt-cerrado">0</span></div><div id="cards-cerrado"></div></div>
     </div>
     <div id="detail-area"></div>
   </div>
+
+  <!-- COMISIONES -->
   <div class="panel" id="panel-comisiones">
-    <div class="cstruct">
-      <div class="cst-title">Estructura de reparto automático — Cláusula 8.2</div>
-      <div class="cst-row"><span class="cst-label" style="color:var(--verde-osc)">A · Soter Capital</span><div class="cbar"><div class="cbf bra" style="width:100%"></div></div><span class="cpct cpa">15%</span></div>
-      <div class="cst-row"><span class="cst-label" style="color:var(--azul-osc)">B · 50% de A</span><div class="cbar"><div class="cbf brb" style="width:50%"></div></div><span class="cpct cpb">7,5%</span></div>
-      <div class="cst-row"><span class="cst-label" style="color:var(--morado-osc)">C · 50% de B</span><div class="cbar"><div class="cbf brc" style="width:25%"></div></div><span class="cpct cpc">3,75%</span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">ℹ Devengo al cobro efectivo (cl. 8.5) · B percibe nexo automático sobre operaciones de C (cl. 8.4)</div>
+    <div class="flujo">
+      <div class="fnode fna">
+        <div class="flbl">A · Soter Capital</div>
+        <div class="fpct">15%</div>
+        <div class="fsub">Comisión base</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fnode fnb">
+        <div class="flbl">B · Sub-agente</div>
+        <div class="fpct">7,5%</div>
+        <div class="fsub">50% de A · nexo cl.8.4</div>
+      </div>
+      <div class="farrow">→</div>
+      <div class="fnode fnc">
+        <div class="flbl">C · Sub-agente</div>
+        <div class="fpct">3,75%</div>
+        <div class="fsub">50% de B</div>
+      </div>
+      <div class="fnote">
+        <strong>⚠ Flujo obligatorio (cl. 8.4):</strong><br>
+        Toda comisión de C <strong>siempre pasa por B</strong>.<br>
+        B percibe el 7,5% automáticamente sobre <em>todas</em> las operaciones generadas por C, sin necesidad de acreditar intervención en cada operación concreta.<br>
+        <span style="opacity:.7">Este nexo estructural es permanente durante toda la vigencia del contrato.</span>
+      </div>
     </div>
-    <div class="sec-head"><div class="sec-title">Registro de comisiones</div><div id="com-totales" style="font-size:12px;color:var(--text3)"></div></div>
-    <div class="tw"><table><thead><tr><th>Cliente</th><th>Valor (€)</th><th>Com. A 15%</th><th>Com. B 7,5%</th><th>Com. C 3,75%</th><th>Estado</th></tr></thead><tbody id="com-tbody"></tbody></table></div>
+    <div class="cstruct">
+      <div class="cst-t">Estructura de reparto automático — Cláusula 8.2</div>
+      <div class="csr"><span class="cslbl" style="color:var(--va)">A · Soter Capital</span><div class="cbar"><div class="cbf bra" style="width:100%"></div></div><span class="cpct cpa">15%</span></div>
+      <div class="csr"><span class="cslbl" style="color:var(--ba)">B · 50% de A (+ nexo C)</span><div class="cbar"><div class="cbf brb" style="width:50%"></div></div><span class="cpct cpb">7,5%</span></div>
+      <div class="csr"><span class="cslbl" style="color:var(--ma)">C · 50% de B</span><div class="cbar"><div class="cbf brc" style="width:25%"></div></div><span class="cpct cpc">3,75%</span></div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">Devengo al cobro efectivo (cl. 8.5) · Las comisiones de C siempre generan también comisión para B (cl. 8.4)</div>
+    </div>
+    <div class="sh"><div class="stit">Registro de comisiones</div><div id="com-totales" style="font-size:12px;color:var(--tx3)"></div></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Cliente</th><th>Valor (€)</th><th>Captador</th><th>Com. A 15%</th><th>Com. B 7,5%</th><th>Com. C 3,75%</th><th>Nexo B</th><th>Estado cobro</th></tr></thead>
+        <tbody id="com-tbody"></tbody>
+      </table>
+    </div>
   </div>
+
+  <!-- CLIENTES -->
   <div class="panel" id="panel-clientes">
-    <div class="abanner">🛡 Protección activa durante vigencia + 24 meses post-contractuales (cl. 22.3). Contacto directo sin A = elusión (cl. 13).</div>
-    <div class="sec-head"><div class="sec-title">Directorio de clientes protegidos</div></div>
+    <div class="abanner">🛡 Protección activa: vigencia + 24 meses post-contractuales (cl. 22.3). Contacto directo con cliente sin A = elusión con penalización mín. 25.000 € (cl. 13 y 14.3).</div>
+    <div class="sh"><div class="stit">Directorio de clientes protegidos</div></div>
     <div class="cgrid" id="cgrid"></div>
   </div>
+
+  <!-- ALERTAS -->
   <div class="panel" id="panel-alertas">
-    <div class="sec-head"><div class="sec-title">Alertas de cumplimiento</div><button class="btn btn-g" onclick="clearAl()">Limpiar todas</button></div>
+    <div class="sh"><div class="stit">Alertas de cumplimiento</div><button class="btn btn-g" onclick="clearAl()">Limpiar todas</button></div>
     <div id="alist"></div>
   </div>
 </div>
-<div class="modal-ov" id="mover">
+
+<!-- MODAL LEAD -->
+<div class="mov" id="mov">
   <div class="modal">
-    <div class="modal-title">Registrar nuevo lead</div>
-    <div class="field"><label>Nombre del cliente / empresa</label><input type="text" id="fn" placeholder="Ej: Energías del Norte S.L."></div>
-    <div class="field"><label>Captado por</label><select id="fc"><option value="B">B (sub-agente)</option><option value="C">C (sub-agente)</option><option value="A">A (Soter Capital)</option></select></div>
-    <div class="field"><label>Valor estimado (€)</label><input type="number" id="fv" placeholder="Ej: 50000"></div>
+    <div class="mt" id="modal-title">Registrar nuevo lead</div>
+    <input type="hidden" id="edit-id" value="">
+    <div class="field"><label>Nombre del cliente / empresa *</label><input type="text" id="fn" placeholder="Ej: Energías del Norte S.L."></div>
     <div class="field"><label>Sector</label><input type="text" id="fs" placeholder="Ej: Industria, Logística..."></div>
-    <div class="field"><label>Comunicado vía WhatsApp (cl. 10.1)</label><select id="fw"><option value="si">Sí — evidencia registrada</option><option value="no">No — pendiente</option></select></div>
-    <div class="mbtns"><button class="btn btn-g" onclick="closeModal()">Cancelar</button><button class="btn btn-p" onclick="saveLead()">Registrar lead</button></div>
+    <div class="field"><label>Captado por</label><select id="fc"><option value="B">B (sub-agente)</option><option value="C">C (sub-agente)</option><option value="A">A (Soter Capital)</option></select></div>
+    <div class="field"><label>Etapa</label><select id="fet"><option value="lead">Lead</option><option value="negociacion">Negociación</option><option value="activo">Cliente activo</option><option value="cerrado">Cerrado</option></select></div>
+    <div class="field"><label>Valor estimado de operación (€)</label><input type="number" id="fv" placeholder="Ej: 50000" min="0"></div>
+    <div class="field"><label>Comunicado vía WhatsApp (cl. 10.1)</label><select id="fw"><option value="si">Sí — evidencia registrada</option><option value="no">No — pendiente de registrar</option></select></div>
+    <div class="field"><label>Notas / observaciones</label><textarea id="fno" rows="3" placeholder="Contexto, próximos pasos, condiciones especiales..."></textarea></div>
+    <div class="mbtns">
+      <button class="btn btn-g" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-p" onclick="saveLead()" id="save-btn">Registrar lead</button>
+    </div>
   </div>
 </div>
+
+<!-- MODAL CONFIRMAR BORRADO -->
+<div class="mov" id="mov-del">
+  <div class="modal" style="max-width:380px">
+    <div class="mt">Eliminar registro</div>
+    <div class="del-conf">⚠ Esta acción no se puede deshacer. El cliente y sus datos serán eliminados del CRM.</div>
+    <p style="font-size:14px;color:var(--tx2);margin-bottom:8px">¿Eliminar <strong id="del-name"></strong>?</p>
+    <div class="mbtns">
+      <button class="btn btn-g" onclick="closeDel()">Cancelar</button>
+      <button class="btn btn-r" onclick="confirmDel()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const SK='soter_crm_v1';
+const SK='soter_crm_v2';
 let S={role:'A',leads:[
-  {id:1,nombre:'Logística Iberdrola S.A.',sector:'Energía',captador:'B',etapa:'negociacion',valor:120000,whatsapp:'si',fecha:'2026-03-15'},
-  {id:2,nombre:'Frigorífico Los Álamos',sector:'Alimentación',captador:'C',etapa:'activo',valor:85000,whatsapp:'si',fecha:'2026-04-02'},
-  {id:3,nombre:'Transportes Martínez e Hijos',sector:'Transporte',captador:'B',etapa:'lead',valor:45000,whatsapp:'si',fecha:'2026-04-20'},
-  {id:4,nombre:'Cerámicas del Levante',sector:'Industria',captador:'C',etapa:'lead',valor:30000,whatsapp:'no',fecha:'2026-05-01'},
-  {id:5,nombre:'Construcciones RB S.L.',sector:'Construcción',captador:'A',etapa:'cerrado',valor:200000,whatsapp:'si',fecha:'2026-02-10'},
-],alertas:[],nid:6,sel:null};
+  {id:1,nombre:'Logística Iberdrola S.A.',sector:'Energía',captador:'B',etapa:'negociacion',valor:120000,whatsapp:'si',fecha:'2026-03-15',notas:'Reunión inicial positiva. Pendiente propuesta técnica.'},
+  {id:2,nombre:'Frigorífico Los Álamos',sector:'Alimentación',captador:'C',etapa:'activo',valor:85000,whatsapp:'si',fecha:'2026-04-02',notas:'Contrato firmado. Pendiente instalación.'},
+  {id:3,nombre:'Transportes Martínez e Hijos',sector:'Transporte',captador:'B',etapa:'lead',valor:45000,whatsapp:'si',fecha:'2026-04-20',notas:''},
+  {id:4,nombre:'Cerámicas del Levante',sector:'Industria',captador:'C',etapa:'lead',valor:30000,whatsapp:'no',fecha:'2026-05-01',notas:'Contacto por referencia. Falta confirmar WhatsApp.'},
+  {id:5,nombre:'Construcciones RB S.L.',sector:'Construcción',captador:'A',etapa:'cerrado',valor:200000,whatsapp:'si',fecha:'2026-02-10',notas:'Cerrado y cobrado. Grupo económico: RB Holding S.L.'},
+],alertas:[],nid:6,sel:null,delId:null};
+
 function load(){try{const d=localStorage.getItem(SK);if(d)S=JSON.parse(d);}catch(e){}}
 function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
 const fmt=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
@@ -218,22 +378,223 @@ const fmtD=d=>d?d.split('-').reverse().join('/'):'';
 function protD(d){if(!d)return'—';const dt=new Date(d);dt.setFullYear(dt.getFullYear()+2);return dt.toLocaleDateString('es-ES');}
 const ini=n=>n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const pct=r=>r==='A'?0.15:r==='B'?0.075:0.0375;
-function vis(){if(S.role==='A')return S.leads;if(S.role==='B')return S.leads.filter(l=>l.captador==='B'||l.captador==='C');return S.leads.filter(l=>l.captador==='C');}
-function setRole(r){S.role=r;save();['A','B','C'].forEach(x=>{document.getElementById('pill-'+x).className='rpill'+(x===r?' r'+x.toLowerCase():'');});const s=r==='A';['add-btn','add-col'].forEach(id=>{document.getElementById(id).style.display=s?'':'none';});S.sel=null;render();}
+
+function vis(){
+  let leads=S.leads;
+  if(S.role==='B') leads=leads.filter(l=>l.captador==='B'||l.captador==='C');
+  else if(S.role==='C') leads=leads.filter(l=>l.captador==='C');
+  const fc=document.getElementById('f-captador-filter')?.value||'';
+  const fe=document.getElementById('f-etapa-filter')?.value||'';
+  const fw=document.getElementById('f-cobro-filter')?.value||'';
+  if(fc) leads=leads.filter(l=>l.captador===fc);
+  if(fe) leads=leads.filter(l=>l.etapa===fe);
+  if(fw) leads=leads.filter(l=>l.whatsapp===fw);
+  return leads;
+}
+
+function setRole(r){S.role=r;save();['A','B','C'].forEach(x=>{document.getElementById('pill-'+x).className='rp'+(x===r?' r'+x.toLowerCase():'');});const s=r==='A';['add-btn','add-col'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=s?'':'none';});S.sel=null;document.getElementById('detail-area').innerHTML='';render();}
 function setTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.panel').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('panel-'+t).classList.add('active');}
-function openModal(){if(S.role!=='A'){addAl('bypass','Intento de registro por parte '+S.role+' sin autorización de A (cl. 3). Solo A puede iniciar el proceso comercial.');return;}document.getElementById('mover').classList.add('open');document.getElementById('fn').focus();}
-function closeModal(){document.getElementById('mover').classList.remove('open');}
-function saveLead(){const n=document.getElementById('fn').value.trim();if(!n){document.getElementById('fn').focus();return;}const l={id:S.nid++,nombre:n,sector:document.getElementById('fs').value.trim()||'Sin especificar',captador:document.getElementById('fc').value,etapa:'lead',valor:parseInt(document.getElementById('fv').value)||0,whatsapp:document.getElementById('fw').value,fecha:new Date().toISOString().split('T')[0]};if(l.whatsapp==='no')addAl('evidencia','"'+l.nombre+'" sin evidencia WhatsApp. Registrar según cl. 10.1 y 11.');S.leads.push(l);['fn','fv','fs'].forEach(id=>document.getElementById(id).value='');closeModal();save();render();}
-function avanzar(id,etapa){if(S.role!=='A'){addAl('bypass','Avance de etapa por parte '+S.role+' (cl. 3). Solo A gestiona el proceso.');return;}const l=S.leads.find(x=>x.id===id);if(l){l.etapa=etapa;save();render();showD(id);}}
+function clearFilters(){['f-captador-filter','f-etapa-filter','f-cobro-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});render();}
+
+function openModal(id){
+  if(S.role!=='A'){addAl('bypass','Intento de registro/edición por parte '+S.role+' sin autorización de A (cl. 3).');return;}
+  document.getElementById('edit-id').value=id||'';
+  if(id){
+    const l=S.leads.find(x=>x.id===id);
+    if(!l)return;
+    document.getElementById('modal-title').textContent='Editar lead';
+    document.getElementById('save-btn').textContent='Guardar cambios';
+    document.getElementById('fn').value=l.nombre;
+    document.getElementById('fs').value=l.sector;
+    document.getElementById('fc').value=l.captador;
+    document.getElementById('fet').value=l.etapa;
+    document.getElementById('fv').value=l.valor;
+    document.getElementById('fw').value=l.whatsapp;
+    document.getElementById('fno').value=l.notas||'';
+  } else {
+    document.getElementById('modal-title').textContent='Registrar nuevo lead';
+    document.getElementById('save-btn').textContent='Registrar lead';
+    ['fn','fs','fno'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fv').value='';
+    document.getElementById('fc').value='B';
+    document.getElementById('fet').value='lead';
+    document.getElementById('fw').value='si';
+  }
+  document.getElementById('mov').classList.add('open');
+  document.getElementById('fn').focus();
+}
+function closeModal(){document.getElementById('mov').classList.remove('open');}
+
+function saveLead(){
+  const n=document.getElementById('fn').value.trim();
+  if(!n){document.getElementById('fn').focus();return;}
+  const eid=document.getElementById('edit-id').value;
+  const data={nombre:n,sector:document.getElementById('fs').value.trim()||'Sin especificar',captador:document.getElementById('fc').value,etapa:document.getElementById('fet').value,valor:parseInt(document.getElementById('fv').value)||0,whatsapp:document.getElementById('fw').value,notas:document.getElementById('fno').value.trim()};
+  if(eid){
+    const idx=S.leads.findIndex(x=>x.id===parseInt(eid));
+    if(idx>=0) Object.assign(S.leads[idx],data);
+  } else {
+    data.id=S.nid++;data.fecha=new Date().toISOString().split('T')[0];
+    if(data.whatsapp==='no') addAl('evidencia','"'+data.nombre+'" registrado sin evidencia WhatsApp. Registrar según cl. 10.1 y 11.');
+    S.leads.push(data);
+  }
+  closeModal();save();render();
+  if(eid) showD(parseInt(eid));
+}
+
+function openDel(id){
+  if(S.role!=='A'){addAl('bypass','Intento de eliminación por parte '+S.role+' sin autorización de A (cl. 3).');return;}
+  S.delId=id;
+  const l=S.leads.find(x=>x.id===id);
+  document.getElementById('del-name').textContent=l?l.nombre:'este registro';
+  document.getElementById('mov-del').classList.add('open');
+}
+function closeDel(){document.getElementById('mov-del').classList.remove('open');S.delId=null;}
+function confirmDel(){if(!S.delId)return;S.leads=S.leads.filter(x=>x.id!==S.delId);if(S.sel===S.delId){S.sel=null;document.getElementById('detail-area').innerHTML='';}save();closeDel();render();}
+
+function avanzar(id,etapa){
+  if(S.role!=='A'){addAl('bypass','Avance de etapa por parte '+S.role+' (cl. 3). Solo A gestiona el proceso.');return;}
+  const l=S.leads.find(x=>x.id===id);
+  if(l){l.etapa=etapa;save();render();showD(id);}
+}
+
 function addAl(tipo,msg){S.alertas.unshift({tipo,msg,ts:new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})});save();document.getElementById('abadge').textContent=S.alertas.length;renderAl();}
 function clearAl(){S.alertas=[];save();render();}
-function renderStats(){const v=vis();const act=v.filter(l=>l.etapa==='activo'||l.etapa==='cerrado');const ce=act.reduce((s,l)=>s+l.valor*pct(S.role),0);document.getElementById('stats-row').innerHTML=`<div class="stat"><div class="stat-label">Leads totales</div><div class="stat-val">${v.length}</div><div class="stat-sub">en pipeline</div></div><div class="stat"><div class="stat-label">Clientes activos</div><div class="stat-val">${act.length}</div><div class="stat-sub">operaciones formalizadas</div></div><div class="stat"><div class="stat-label">Valor pipeline</div><div class="stat-val">${fmt(v.reduce((s,l)=>s+l.valor,0))}</div><div class="stat-sub">estimado total</div></div><div class="stat"><div class="stat-label">Comisión ${S.role} estimada</div><div class="stat-val">${fmt(ce)}</div><div class="stat-sub">${(pct(S.role)*100)}% sobre activos</div></div>`;}
-function renderPipeline(){const v=vis();['lead','negociacion','activo','cerrado'].forEach(e=>{const g=v.filter(l=>l.etapa===e);document.getElementById('cnt-'+e).textContent=g.length;document.getElementById('cards-'+e).innerHTML=g.map(l=>`<div class="kcard${S.sel===l.id?' sel':''}" onclick="showD(${l.id})"><div class="kcard-name">${l.nombre}</div><div class="kcard-row"><span class="op o${l.captador.toLowerCase()}">${l.captador}</span><span class="kval">${fmt(l.valor*pct(S.role))}</span></div></div>`).join('');});}
-function showD(id){S.sel=id;const l=S.leads.find(x=>x.id===id);if(!l)return;const etps=[['lead','Lead'],['negociacion','Negociación'],['activo','Cliente activo'],['cerrado','Cerrado']];const ca=S.role==='A';document.getElementById('detail-area').innerHTML=`<div class="dw"><div class="dh"><div class="dn">${l.nombre}</div><button class="xbtn" onclick="S.sel=null;document.getElementById('detail-area').innerHTML=''">×</button></div>${l.whatsapp==='no'?'<div class="warn">⚠ Sin evidencia WhatsApp — registrar según cl. 10.1 y 11</div>':''}${l.captador==='C'?'<div class="nexo">ℹ B percibe nexo automático sobre esta operación (cl. 8.4)</div>':''}<div class="dgrid"><div class="df"><label>Captado por</label><span class="op o${l.captador.toLowerCase()}" style="font-size:13px">${l.captador}</span></div><div class="df"><label>Sector</label><span>${l.sector}</span></div><div class="df"><label>Valor estimado</label><span>${fmt(l.valor)}</span></div><div class="df"><label>Fecha registro</label><span>${fmtD(l.fecha)}</span></div><div class="df"><label>WhatsApp (cl. 10.1)</label><span style="color:${l.whatsapp==='si'?'var(--verde-osc)':'var(--rojo-osc)'}">${l.whatsapp==='si'?'✓ Registrada':'⚠ Pendiente'}</span></div><div class="df"><label>Protección hasta (cl. 22.3)</label><span style="color:var(--verde-osc)">${protD(l.fecha)}</span></div></div><div class="cbs"><div class="cb cba"><label>Com. A · 15%</label><span>${fmt(l.valor*0.15)}</span></div><div class="cb cbb"><label>Com. B · 7,5%</label><span>${fmt(l.valor*0.075)}</span></div><div class="cb cbc"><label>Com. C · 3,75%</label><span>${fmt(l.valor*0.0375)}</span></div></div><div style="font-size:12px;color:var(--text3);margin-bottom:8px">Avanzar etapa${ca?'':' (solo A puede modificar)'}:</div><div class="stage-row">${etps.map(([e,lb])=>`<button class="sbtn${l.etapa===e?' sact':''}" onclick="${ca?`avanzar(${id},'${e}')`:'void 0'}" style="${ca?'':'opacity:.45;cursor:default'}">${lb}</button>`).join('')}</div></div>`;renderPipeline();}
-function renderCom(){const v=vis();const act=v.filter(l=>l.etapa==='activo'||l.etapa==='cerrado');let ta=0,tb=0,tc=0;document.getElementById('com-tbody').innerHTML=act.length?act.map(l=>{ta+=l.valor*0.15;tb+=l.valor*0.075;tc+=l.valor*0.0375;const cob=l.etapa==='cerrado';return`<tr><td><strong>${l.nombre}</strong><br><span style="font-size:11px;color:var(--text3)">${l.sector}</span></td><td>${fmt(l.valor)}</td><td style="color:var(--verde-osc);font-weight:700">${fmt(l.valor*0.15)}</td><td style="color:var(--azul-osc);font-weight:700">${fmt(l.valor*0.075)}</td><td style="color:var(--morado-osc);font-weight:700">${fmt(l.valor*0.0375)}</td><td><span class="sp ${cob?'spc':'spp'}">${cob?'Cobrado':'Pendiente'}</span></td></tr>`;}).join(''):`<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">No hay operaciones activas todavía</td></tr>`;document.getElementById('com-totales').textContent=`A: ${fmt(ta)} · B: ${fmt(tb)} · C: ${fmt(tc)}`;}
-function renderClientes(){const v=vis();document.getElementById('cgrid').innerHTML=v.map(l=>{const etaC={lead:'var(--azul-osc)',negociacion:'var(--amber-osc)',activo:'var(--verde-osc)',cerrado:'var(--gris-osc)'}[l.etapa];const etaB={lead:'var(--azul-clar)',negociacion:'var(--amber-clar)',activo:'var(--verde-clar)',cerrado:'var(--gris-clar)'}[l.etapa];const eta={lead:'Lead',negociacion:'Negociación',activo:'Cliente activo',cerrado:'Cerrado'}[l.etapa];return`<div class="ccard" onclick="setTab('pipeline');showD(${l.id})"><div class="chead"><div class="av av-${l.captador.toLowerCase()}">${ini(l.nombre)}</div><div><div style="font-weight:700;font-size:14px">${l.nombre}</div><div style="font-size:12px;color:var(--text3)">${l.sector}</div></div></div><div class="cmeta"><span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:${etaB};color:${etaC}">${eta}</span><span class="ptag">🛡 hasta ${protD(l.fecha)}</span></div></div>`;}).join('');}
-function renderAl(){document.getElementById('abadge').textContent=S.alertas.length;document.getElementById('alist').innerHTML=S.alertas.length?S.alertas.map((a,i)=>`<div class="al al${a.tipo==='bypass'?'bp':'ev'}"><span style="font-size:18px">${a.tipo==='bypass'?'🚫':'⚠'}</span><div class="al-body"><div class="al-title">${a.tipo==='bypass'?'Alerta bypass / elusión (cl. 13)':'Evidencia pendiente (cl. 10.1)'}</div><div class="al-desc">${a.msg}</div><div style="font-size:10px;margin-top:4px;opacity:.7">${a.ts}</div></div><button class="alcls" onclick="S.alertas.splice(${i},1);save();renderAl()">×</button></div>`).join(''):`<div class="empty"><div style="font-size:36px;margin-bottom:10px">✓</div>Sin alertas activas</div>`;}
+
+function exportCSV(){
+  const v=S.leads;
+  const rows=[['ID','Nombre','Sector','Captador','Etapa','Valor €','WhatsApp','Fecha','Notas','Com A 15%','Com B 7.5%','Com C 3.75%']];
+  v.forEach(l=>rows.push([l.id,l.nombre,l.sector,l.captador,l.etapa,l.valor,l.whatsapp,l.fecha,l.notas||'',Math.round(l.valor*0.15),Math.round(l.valor*0.075),Math.round(l.valor*0.0375)]));
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='soter_crm_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+}
+
+// RENDER
+function renderStats(){
+  const v=vis();
+  const act=v.filter(l=>l.etapa==='activo'||l.etapa==='cerrado');
+  const ce=act.reduce((s,l)=>s+l.valor*pct(S.role),0);
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat"><div class="slbl">Leads totales</div><div class="sval">${v.length}</div><div class="ssub">en pipeline</div></div>
+    <div class="stat"><div class="slbl">Clientes activos</div><div class="sval">${act.length}</div><div class="ssub">operaciones formalizadas</div></div>
+    <div class="stat"><div class="slbl">Valor pipeline</div><div class="sval" style="font-size:20px">${fmt(v.reduce((s,l)=>s+l.valor,0))}</div><div class="ssub">estimado total</div></div>
+    <div class="stat"><div class="slbl">Comisión ${S.role} estimada</div><div class="sval" style="font-size:20px">${fmt(ce)}</div><div class="ssub">${(pct(S.role)*100)}% sobre activos/cerrados</div></div>`;
+}
+
+function renderPipeline(){
+  const v=vis();
+  const ca=S.role==='A';
+  ['lead','negociacion','activo','cerrado'].forEach(e=>{
+    const g=v.filter(l=>l.etapa===e);
+    document.getElementById('cnt-'+e).textContent=g.length;
+    document.getElementById('cards-'+e).innerHTML=g.map(l=>`
+      <div class="kcard${S.sel===l.id?' sel':''}" onclick="showD(${l.id})">
+        <div class="kcard-name">${l.nombre}</div>
+        <div class="kcard-row">
+          <span class="op o${l.captador.toLowerCase()}">${l.captador}</span>
+          <span class="kv">${fmt(l.valor*pct(S.role))}</span>
+        </div>
+        ${ca?`<div class="kcard-actions"><button class="iac" onclick="event.stopPropagation();openModal(${l.id})" title="Editar">✏️</button><button class="iac" onclick="event.stopPropagation();openDel(${l.id})" title="Eliminar">🗑️</button></div>`:''}
+      </div>`).join('');
+  });
+}
+
+function showD(id){
+  S.sel=id;
+  const l=S.leads.find(x=>x.id===id);
+  if(!l)return;
+  const ca=S.role==='A';
+  const etps=[['lead','Lead'],['negociacion','Negociación'],['activo','Cliente activo'],['cerrado','Cerrado']];
+  document.getElementById('detail-area').innerHTML=`
+    <div class="dw">
+      <div class="dh">
+        <div class="dn">${l.nombre}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${ca?`<button class="btn btn-g btn-sm" onclick="openModal(${l.id})">✏️ Editar</button><button class="btn btn-r btn-sm" onclick="openDel(${l.id})">🗑️ Eliminar</button>`:''}
+          <button class="xbtn" onclick="S.sel=null;document.getElementById('detail-area').innerHTML=''">×</button>
+        </div>
+      </div>
+      ${l.whatsapp==='no'?'<div class="warn">⚠ Sin evidencia WhatsApp — registrar comunicación según cl. 10.1 y 11</div>':''}
+      ${l.captador==='C'?'<div class="nexo">📋 Nexo obligatorio (cl. 8.4): B percibe el 7,5% automáticamente sobre esta operación. Toda comisión de C pasa siempre por B.</div>':''}
+      <div class="dgrid">
+        <div class="df"><label>Captado por</label><span class="op o${l.captador.toLowerCase()}" style="font-size:13px">${l.captador}</span></div>
+        <div class="df"><label>Sector</label><span>${l.sector}</span></div>
+        <div class="df"><label>Valor estimado</label><span>${fmt(l.valor)}</span></div>
+        <div class="df"><label>Fecha registro</label><span>${fmtD(l.fecha)}</span></div>
+        <div class="df"><label>WhatsApp (cl. 10.1)</label><span style="color:${l.whatsapp==='si'?'var(--va)':'var(--ra)'}">${l.whatsapp==='si'?'✓ Registrada':'⚠ Pendiente'}</span></div>
+        <div class="df"><label>Protección hasta (cl. 22.3)</label><span style="color:var(--va)">${protD(l.fecha)}</span></div>
+        ${l.notas?`<div class="df full"><label>Notas</label><span style="font-weight:400;font-size:13px;color:var(--tx2)">${l.notas}</span></div>`:''}
+      </div>
+      <div class="cbs">
+        <div class="cb cba"><label>Com. A · 15%</label><span>${fmt(l.valor*0.15)}</span></div>
+        <div class="cb cbb"><label>Com. B · 7,5%${l.captador==='C'?' (nexo)':''}</label><span>${fmt(l.valor*0.075)}</span></div>
+        <div class="cb cbc"><label>Com. C · 3,75%</label><span>${l.captador==='C'?fmt(l.valor*0.0375):'—'}</span></div>
+      </div>
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:8px">Etapa${ca?'':' (solo A puede modificar)'}:</div>
+      <div class="stage-row">${etps.map(([e,lb])=>`<button class="sbtn${l.etapa===e?' sact':''}" onclick="${ca?`avanzar(${id},'${e}')`:'void 0'}" ${ca?'':'disabled'}>${lb}</button>`).join('')}</div>
+    </div>`;
+  renderPipeline();
+}
+
+function renderCom(){
+  const v=vis();
+  const act=v.filter(l=>l.etapa==='activo'||l.etapa==='cerrado');
+  let ta=0,tb=0,tc=0;
+  document.getElementById('com-tbody').innerHTML=act.length?act.map(l=>{
+    ta+=l.valor*0.15;
+    tb+=l.valor*0.075;
+    if(l.captador==='C') tc+=l.valor*0.0375;
+    const cob=l.etapa==='cerrado';
+    const nexo=l.captador==='C';
+    return`<tr>
+      <td><strong>${l.nombre}</strong><br><span style="font-size:11px;color:var(--tx3)">${l.sector}</span></td>
+      <td>${fmt(l.valor)}</td>
+      <td><span class="op o${l.captador.toLowerCase()}">${l.captador}</span></td>
+      <td style="color:var(--va);font-weight:700">${fmt(l.valor*0.15)}</td>
+      <td style="color:var(--ba);font-weight:700">${fmt(l.valor*0.075)}</td>
+      <td style="color:var(--ma);font-weight:700">${nexo?fmt(l.valor*0.0375):'<span style="color:var(--tx3)">—</span>'}</td>
+      <td>${nexo?'<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--bc);color:var(--ba)">✓ Automático</span>':'<span style="color:var(--tx3)">—</span>'}</td>
+      <td><span class="sp ${cob?'spc':'spp'}">${cob?'Cobrado':'Pendiente'}</span></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--tx3)">No hay operaciones activas todavía</td></tr>`;
+  document.getElementById('com-totales').textContent=`A: ${fmt(ta)} · B: ${fmt(tb)} · C: ${fmt(tc)}`;
+}
+
+function renderClientes(){
+  const v=vis();
+  document.getElementById('cgrid').innerHTML=v.length?v.map(l=>{
+    const etaC={lead:'var(--ba)',negociacion:'var(--aa)',activo:'var(--va)',cerrado:'var(--ga)'}[l.etapa];
+    const etaB={lead:'var(--bc)',negociacion:'var(--ac)',activo:'var(--vc)',cerrado:'var(--gc)'}[l.etapa];
+    const eta={lead:'Lead',negociacion:'Negociación',activo:'Cliente activo',cerrado:'Cerrado'}[l.etapa];
+    return`<div class="ccard" onclick="setTab('pipeline');showD(${l.id})">
+      <div class="cch"><div class="av av-${l.captador.toLowerCase()}">${ini(l.nombre)}</div>
+        <div><div style="font-weight:700;font-size:14px">${l.nombre}</div><div style="font-size:12px;color:var(--tx3)">${l.sector} · captado por <strong>${l.captador}</strong></div></div>
+      </div>
+      <div class="cmeta">
+        <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:${etaB};color:${etaC}">${eta}</span>
+        <span class="ptag">🛡 hasta ${protD(l.fecha)}</span>
+      </div>
+      ${l.notas?`<div style="font-size:12px;color:var(--tx3);margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">${l.notas}</div>`:''}
+    </div>`;
+  }).join(''):`<div class="empty">Sin clientes visibles con los filtros actuales</div>`;
+}
+
+function renderAl(){
+  document.getElementById('abadge').textContent=S.alertas.length;
+  document.getElementById('alist').innerHTML=S.alertas.length?S.alertas.map((a,i)=>`
+    <div class="al al${a.tipo==='bypass'?'bp':'ev'}">
+      <span style="font-size:18px;flex-shrink:0">${a.tipo==='bypass'?'🚫':'⚠'}</span>
+      <div class="al-bd">
+        <div class="al-ti">${a.tipo==='bypass'?'Alerta bypass / elusión (cl. 13)':'Evidencia pendiente (cl. 10.1)'}</div>
+        <div class="al-de">${a.msg}</div>
+        <div style="font-size:10px;margin-top:4px;opacity:.7">${a.ts}</div>
+      </div>
+      <button class="alcls" onclick="S.alertas.splice(${i},1);save();renderAl()">×</button>
+    </div>`).join(''):`<div class="empty"><div style="font-size:36px;margin-bottom:10px">✓</div>Sin alertas activas</div>`;
+}
+
 function render(){renderStats();renderPipeline();renderCom();renderClientes();renderAl();}
+
 load();setRole(S.role);render();
 </script>
 </body>
