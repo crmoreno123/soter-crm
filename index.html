@@ -260,8 +260,7 @@ tr:hover td{background:var(--bg2);}
     <div class="lock-logo">🔐</div>
     <div class="lock-title">Acceso A · Soter Capital</div>
     <div class="lock-sub">Introduce la contraseña de administrador</div>
-    <input type="password" class="lock-input" id="lock-input" placeholder="••••" maxlength="30"
-      onkeydown="if(event.key==='Enter')checkPass()">
+    <input type="text" class="lock-input" id="lock-input" placeholder="Contraseña" maxlength="30" autocomplete="off" data-lpignore="true" data-form-type="other" style="-webkit-text-security:disc" onkeydown="if(event.key==='Enter')checkPass()">
     <button class="lock-btn" onclick="checkPass()">Entrar</button>
     <div class="lock-err" id="lock-err"></div>
     <div class="lock-hint">B y C no necesitan contraseña</div>
@@ -380,9 +379,9 @@ tr:hover td{background:var(--bg2);}
         <div class="scard-title"><span>🔐</span> Contraseña de administrador</div>
         <p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Cambia la contraseña del rol A. El cambio es inmediato y se aplica a todos los dispositivos.</p>
         <div class="pass-form">
-          <div class="field" style="margin:0"><label>Contraseña actual</label><input type="password" class="pass-input" id="pass-old" placeholder="Contraseña actual"></div>
-          <div class="field" style="margin:0"><label>Nueva contraseña</label><input type="password" class="pass-input" id="pass-new" placeholder="Nueva contraseña (mín. 3 caracteres)"></div>
-          <div class="field" style="margin:0"><label>Confirmar nueva</label><input type="password" class="pass-input" id="pass-conf" placeholder="Repite la nueva contraseña"></div>
+          <div class="field" style="margin:0"><label>Contraseña actual</label><input type="text" class="pass-input" id="pass-old" placeholder="Contraseña actual" autocomplete="off" data-lpignore="true" data-form-type="other" style="-webkit-text-security:disc"></div>
+          <div class="field" style="margin:0"><label>Nueva contraseña</label><input type="text" class="pass-input" id="pass-new" placeholder="Nueva contraseña" autocomplete="off" data-lpignore="true" data-form-type="other" style="-webkit-text-security:disc"></div>
+          <div class="field" style="margin:0"><label>Confirmar nueva</label><input type="text" class="pass-input" id="pass-conf" placeholder="Confirmar contraseña" autocomplete="off" data-lpignore="true" data-form-type="other" style="-webkit-text-security:disc"></div>
           <div class="err-msg" id="pass-err"></div>
           <div class="ok-msg" id="pass-ok">✓ Contraseña cambiada correctamente.</div>
           <button class="btn btn-p" onclick="changePass()">Cambiar contraseña</button>
