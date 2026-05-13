@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soter CRM</title>
+<style>
+:root{
+  --va:#0F6E56;--vm:#1D9E75;--vc:#E1F5EE;
+  --ba:#185FA5;--bm:#378ADD;--bc:#E6F1FB;
+  --ma:#534AB7;--mm:#7F77DD;--mc:#EEEDFE;
+  --aa:#854F0B;--am:#EF9F27;--ac:#FAEEDA;
+  --ra:#A32D2D;--rm:#E24B4A;--rc:#FCEBEB;
+  --ga:#444441;--gc:#F1EFE8;--gm:#888780;
+  --bg:#fff;--bg2:#f8f9fa;--bg3:#f1f0ee;
+  --tx:#1a1a18;--tx2:#5f5e5a;--tx3:#888780;
+  --bd:#e0ddd6;--bd2:#c8c5be;
+  --r:10px;--rs:6px;
+  --sh:0 1px 4px rgba(0,0,0,.08);--shm:0 4px 16px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--tx);font-size:14px;}
+
+/* SYNC INDICATOR */
+.sync-bar{height:3px;background:var(--bg2);position:fixed;top:0;left:0;right:0;z-index:999;}
+.sync-bar-inner{height:100%;width:0;background:var(--vm);transition:width .3s;}
+.sync-dot{position:fixed;bottom:16px;right:16px;width:10px;height:10px;border-radius:50%;background:var(--gm);z-index:999;transition:background .3s;}
+.sync-dot.ok{background:var(--vm);}
+.sync-dot.err{background:var(--ra);}
+.sync-dot.loading{background:var(--am);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.top{background:var(--bg);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:3px;z-index:300;box-shadow:var(--sh);}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;}
+.ldot{width:10px;height:10px;border-radius:50%;background:var(--vm);}
+.lsub{font-weight:400;font-size:12px;color:var(--tx3);}
+.rsw{display:flex;gap:6px;}
+.rp{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bd2);color:var(--tx2);background:var(--bg2);transition:all .15s;user-select:none;}
+.rp.ra{background:var(--vc);color:var(--va);border-color:var(--vm);}
+.rp.rb{background:var(--bc);color:var(--ba);border-color:var(--bm);}
+.rp.rc{background:var(--mc);color:var(--ma);border-color:var(--mm);}
+
+.tabs{background:var(--bg);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;gap:2px;overflow-x:auto;}
+.tab{padding:12px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--tx3);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.tab:hover{color:var(--tx);}
+.tab.active{color:var(--va);border-bottom-color:var(--va);}
+.tbadge{background:var(--rc);color:var(--ra);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:5px;font-weight:700;}
+
+.main{padding:24px;max-width:1440px;margin:0 auto;}
+.panel{display:none;}.panel.active{display:block;}
+
+/* LOADING OVERLAY */
+.loading-ov{position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:900;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.loading-ov.hidden{display:none;}
+.spinner{width:40px;height:40px;border:3px solid var(--bd);border-top-color:var(--vm);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:13px;color:var(--tx3);}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat{background:var(--bg);border-radius:var(--r);border:1px solid var(--bd);padding:16px 20px;box-shadow:var(--sh);}
+.slbl{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.sval{font-size:24px;font-weight:700;line-height:1;}
+.ssub{font-size:11px;color:var(--tx3);margin-top:4px;}
+
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.stit{font-size:16px;font-weight:700;}
+.btns-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+.btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;white-space:nowrap;}
+.btn-p{background:var(--vc);color:var(--va);border-color:var(--vm);}
+.btn-p:hover{background:var(--vm);color:#fff;}
+.btn-g{background:transparent;color:var(--tx2);border-color:var(--bd2);}
+.btn-g:hover{background:var(--bg2);}
+.btn-r{background:var(--rc);color:var(--ra);border-color:var(--rm);}
+.btn-r:hover{background:var(--rm);color:#fff;}
+.btn-b{background:var(--bc);color:var(--ba);border-color:var(--bm);}
+.btn-b:hover{background:var(--bm);color:#fff;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+
+.filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.fsel{padding:7px 12px;border-radius:var(--rs);border:1.5px solid var(--bd2);background:var(--bg);color:var(--tx2);font-size:12px;font-family:inherit;cursor:pointer;}
+.fsel:focus{outline:none;border-color:var(--vm);}
+.fsrch{padding:7px 12px;border-radius:var(--rs);border:1.5px solid var(--bd2);background:var(--bg);color:var(--tx);font-size:12px;font-family:inherit;width:200px;}
+.fsrch:focus{outline:none;border-color:var(--vm);}
+
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.pcol{background:var(--bg2);border-radius:var(--r);border:1px solid var(--bd);padding:14px;min-height:300px;}
+.pch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.pct{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx2);}
+.pcnt{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.cl{background:var(--bc);color:var(--ba);}
+.cn{background:var(--ac);color:var(--aa);}
+.ca{background:var(--vc);color:var(--va);}
+.cc{background:var(--gc);color:var(--ga);}
+
+.kcard{background:var(--bg);border-radius:var(--rs);border:1px solid var(--bd);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;}
+.kcard:hover{border-color:var(--bd2);box-shadow:var(--sh);transform:translateY(-1px);}
+.kcard.sel{border-color:var(--vm);box-shadow:0 0 0 2px var(--vc);}
+.kcard-name{font-size:13px;font-weight:600;margin-bottom:6px;padding-right:54px;}
+.kcard-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.kcard-actions{position:absolute;top:8px;right:8px;display:none;gap:3px;}
+.kcard:hover .kcard-actions{display:flex;}
+.iac{background:var(--bg2);border:1px solid var(--bd);cursor:pointer;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .1s;}
+.iac:hover{background:var(--bg3);border-color:var(--bd2);}
+.op{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.oa{background:var(--vc);color:var(--va);}
+.ob{background:var(--bc);color:var(--ba);}
+.oc{background:var(--mc);color:var(--ma);}
+.kv{font-size:12px;font-weight:600;color:var(--va);}
+.knote{font-size:11px;color:var(--tx3);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.add-col{width:100%;margin-top:4px;padding:8px;font-size:12px;color:var(--tx3);border:1.5px dashed var(--bd2);border-radius:var(--rs);background:transparent;cursor:pointer;transition:all .15s;}
+.add-col:hover{background:var(--bg);color:var(--tx);border-color:var(--vm);}
+
+.dw{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:22px;margin-top:18px;box-shadow:var(--shm);}
+.dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;}
+.dn{font-size:18px;font-weight:700;}
+.dh-btns{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.xbtn{background:none;border:none;font-size:24px;cursor:pointer;color:var(--tx3);line-height:1;padding:0 4px;}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.df{background:var(--bg2);border-radius:var(--rs);padding:10px 14px;}
+.df label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);display:block;margin-bottom:3px;}
+.df span{font-size:14px;font-weight:600;}
+.df.full{grid-column:1/-1;}
+.df.full span{font-weight:400;font-size:13px;color:var(--tx2);line-height:1.5;}
+
+.cbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.cb{border-radius:var(--rs);padding:12px 14px;}
+.cba{background:var(--vc);}.cbb{background:var(--bc);}.cbc{background:var(--mc);}
+.cb label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;}
+.cba label{color:var(--va);}.cbb label{color:var(--ba);}.cbc label{color:var(--ma);}
+.cb span{font-size:18px;font-weight:700;}
+.cba span{color:var(--va);}.cbb span{color:var(--ba);}.cbc span{color:var(--ma);}
+
+.stage-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.sbtn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bd2);background:var(--bg2);color:var(--tx2);transition:all .15s;}
+.sbtn:hover:not(:disabled){background:var(--bg3);}
+.sbtn.sact{background:var(--vc);color:var(--va);border-color:var(--vm);}
+.sbtn:disabled{opacity:.35;cursor:default;}
+
+.nexo{background:var(--bc);color:var(--ba);border-radius:var(--rs);padding:8px 12px;font-size:12px;margin-bottom:10px;border:1px solid var(--bm);}
+.warn{background:var(--ac);color:var(--aa);border-radius:var(--rs);padding:8px 12px;font-size:12px;margin-bottom:10px;border:1px solid var(--am);}
+
+.flujo{display:flex;align-items:stretch;gap:0;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:20px;box-shadow:var(--sh);overflow:hidden;flex-wrap:wrap;}
+.fnode{flex:1;padding:18px 20px;text-align:center;min-width:130px;}
+.fna{background:var(--vc);border-right:1px solid var(--bd);}
+.fnb{background:var(--bc);border-right:1px solid var(--bd);}
+.fnc{background:var(--mc);border-right:1px solid var(--bd);}
+.fninfo{flex:2;padding:18px 20px;background:var(--bg2);min-width:240px;}
+.fnode .flbl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:6px;}
+.fna .flbl{color:var(--va);}.fnb .flbl{color:var(--ba);}.fnc .flbl{color:var(--ma);}
+.fnode .fpct{font-size:28px;font-weight:800;line-height:1;}
+.fna .fpct{color:var(--va);}.fnb .fpct{color:var(--ba);}.fnc .fpct{color:var(--ma);}
+.fnode .fsub{font-size:11px;margin-top:4px;opacity:.8;}
+.fna .fsub{color:var(--va);}.fnb .fsub{color:var(--ba);}.fnc .fsub{color:var(--ma);}
+.farr{width:28px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--tx3);background:var(--bg);border-right:1px solid var(--bd);flex-shrink:0;}
+
+.tw{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;padding:10px 14px;background:var(--bg2);color:var(--tx3);text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid var(--bd);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg2);}
+.sp{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.spp{background:var(--ac);color:var(--aa);}
+.spc{background:var(--vc);color:var(--va);}
+.spr{background:var(--rc);color:var(--ra);}
+
+.al{border-radius:var(--rs);padding:12px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;}
+.alev{background:var(--ac);border:1px solid var(--am);}
+.albp{background:var(--rc);border:1px solid var(--rm);}
+.al-bd{flex:1;}
+.al-ti{font-size:13px;font-weight:600;}
+.al-de{font-size:12px;margin-top:2px;}
+.alev .al-ti,.alev .al-de{color:var(--aa);}
+.albp .al-ti,.albp .al-de{color:var(--ra);}
+.alcls{background:none;border:none;font-size:20px;cursor:pointer;color:inherit;opacity:.5;flex-shrink:0;}
+.alcls:hover{opacity:1;}
+
+.cgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.ccard{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);cursor:pointer;transition:all .15s;}
+.ccard:hover{box-shadow:var(--shm);transform:translateY(-1px);}
+.cch{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.av-a{background:var(--vc);color:var(--va);}
+.av-b{background:var(--bc);color:var(--ba);}
+.av-c{background:var(--mc);color:var(--ma);}
+.cmeta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.ptag{font-size:10px;color:var(--va);background:var(--vc);padding:3px 8px;border-radius:4px;font-weight:600;}
+.abanner{background:var(--ac);border:1px solid var(--am);border-radius:var(--rs);padding:10px 16px;font-size:12px;color:var(--aa);margin-bottom:18px;}
+
+/* AJUSTES */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.scard{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:20px;box-shadow:var(--sh);}
+.scard-title{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--tx);display:flex;align-items:center;gap:8px;}
+.scard-title span{font-size:18px;}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);gap:12px;}
+.srow:last-child{border-bottom:none;}
+.srow label{font-size:13px;color:var(--tx2);flex:1;}
+.srow-sub{font-size:11px;color:var(--tx3);margin-top:2px;}
+.pct-input{width:80px;padding:7px 10px;border-radius:var(--rs);border:1.5px solid var(--bd2);font-size:14px;font-weight:700;text-align:center;font-family:inherit;color:var(--tx);}
+.pct-input:focus{outline:none;}
+.pct-a:focus{border-color:var(--vm);}
+.pct-b:focus{border-color:var(--bm);}
+.pct-c:focus{border-color:var(--mm);}
+.info-box{background:var(--ac);border:1px solid var(--am);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--aa);margin-top:12px;line-height:1.6;}
+.pass-form{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+.pass-input{padding:9px 12px;border-radius:var(--rs);border:1.5px solid var(--bd2);font-size:14px;font-family:inherit;width:100%;}
+.pass-input:focus{outline:none;border-color:var(--vm);}
+.err-msg{color:var(--ra);font-size:12px;margin-top:4px;display:none;}
+.err-msg.show{display:block;}
+.ok-msg{color:var(--va);font-size:12px;margin-top:4px;display:none;}
+.ok-msg.show{display:block;}
+
+/* MODAL */
+.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:600;align-items:center;justify-content:center;}
+.mov.open{display:flex;}
+.modal{background:var(--bg);border-radius:var(--r);border:1px solid var(--bd);padding:28px;width:480px;max-width:95vw;box-shadow:var(--shm);max-height:92vh;overflow-y:auto;}
+.modal-sm{width:360px;}
+.mt{font-size:18px;font-weight:700;margin-bottom:20px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:5px;font-weight:600;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;font-size:14px;border:1.5px solid var(--bd2);border-radius:var(--rs);background:var(--bg);color:var(--tx);font-family:inherit;transition:border-color .15s;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--vm);}
+.mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+.del-warn{background:var(--rc);border:1px solid var(--rm);border-radius:var(--rs);padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--ra);}
+.empty{text-align:center;padding:48px;color:var(--tx3);}
+
+/* LOCK */
+.lock-screen{position:fixed;inset:0;background:rgba(15,110,86,.97);z-index:1000;display:none;align-items:center;justify-content:center;}
+.lock-screen.open{display:flex;}
+.lock-box{background:var(--bg);border-radius:16px;padding:36px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;}
+.lock-logo{font-size:36px;margin-bottom:12px;}
+.lock-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+.lock-sub{font-size:13px;color:var(--tx3);margin-bottom:24px;}
+.lock-input{width:100%;padding:12px 16px;border-radius:var(--rs);border:1.5px solid var(--bd2);font-size:18px;text-align:center;letter-spacing:.3em;font-family:inherit;margin-bottom:12px;}
+.lock-input:focus{outline:none;border-color:var(--vm);}
+.lock-btn{width:100%;padding:12px;border-radius:var(--rs);background:var(--vm);color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s;}
+.lock-btn:hover{background:var(--va);}
+.lock-err{color:var(--ra);font-size:13px;margin-top:8px;min-height:20px;}
+.lock-hint{font-size:11px;color:var(--tx3);margin-top:16px;}
+
+@media(max-width:1100px){.pipeline{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.settings-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.pipeline{grid-template-columns:1fr}.cgrid{grid-template-columns:1fr}.dgrid{grid-template-columns:1fr}.cbs{grid-template-columns:1fr}.top{padding:0 14px}.main{padding:14px}.flujo{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="sync-bar"><div class="sync-bar-inner" id="sync-bar-inner"></div></div>
+<div class="sync-dot" id="sync-dot" title="Estado de conexión"></div>
+
+<!-- LOADING -->
+<div class="loading-ov" id="loading-ov">
+  <div class="spinner"></div>
+  <div class="loading-txt">Conectando con la base de datos...</div>
+</div>
+
+<!-- LOCK -->
+<div class="lock-screen" id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-logo">🔐</div>
+    <div class="lock-title">Acceso A · Soter Capital</div>
+    <div class="lock-sub">Introduce la contraseña de administrador</div>
+    <input type="password" class="lock-input" id="lock-input" placeholder="••••" maxlength="30"
+      onkeydown="if(event.key==='Enter')checkPass()">
+    <button class="lock-btn" onclick="checkPass()">Entrar</button>
+    <div class="lock-err" id="lock-err"></div>
+    <div class="lock-hint">B y C no necesitan contraseña</div>
+  </div>
+</div>
+
+<div class="top">
+  <div class="logo"><div class="ldot"></div>Soter CRM<span class="lsub">Pipeline Comercial · Tiempo real</span></div>
+  <div class="rsw">
+    <div class="rp ra" onclick="tryRole('A')" id="pill-A">A · Soter Capital</div>
+    <div class="rp" onclick="tryRole('B')" id="pill-B">B · Sub-agente</div>
+    <div class="rp" onclick="tryRole('C')" id="pill-C">C · Sub-agente</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="setTab('pipeline')" id="tab-pipeline">Pipeline</div>
+  <div class="tab" onclick="setTab('comisiones')" id="tab-comisiones">Comisiones</div>
+  <div class="tab" onclick="setTab('clientes')" id="tab-clientes">Clientes</div>
+  <div class="tab" onclick="setTab('alertas')" id="tab-alertas">Alertas <span class="tbadge" id="abadge">0</span></div>
+  <div class="tab" onclick="setTab('ajustes')" id="tab-ajustes" style="display:none">⚙ Ajustes</div>
+</div>
+
+<div class="main">
+  <!-- PIPELINE -->
+  <div class="panel active" id="panel-pipeline">
+    <div class="stats" id="stats-row"></div>
+    <div class="sh">
+      <div class="stit">Pipeline comercial</div>
+      <div class="btns-row">
+        <button class="btn btn-g" onclick="exportCSV()">⬇ Exportar CSV</button>
+        <button class="btn btn-p" onclick="openModal()" id="add-btn" style="display:none">+ Nuevo lead</button>
+      </div>
+    </div>
+    <div class="filters">
+      <input type="text" class="fsrch" id="f-search" placeholder="🔍 Buscar cliente..." oninput="render()">
+      <select class="fsel" id="f-cap" onchange="render()">
+        <option value="">Todos los captadores</option>
+        <option value="A">A · Soter Capital</option>
+        <option value="B">B · Sub-agente</option>
+        <option value="C">C · Sub-agente</option>
+      </select>
+      <select class="fsel" id="f-eta" onchange="render()">
+        <option value="">Todas las etapas</option>
+        <option value="lead">Lead</option>
+        <option value="negociacion">Negociación</option>
+        <option value="activo">Cliente activo</option>
+        <option value="cerrado">Cerrado</option>
+      </select>
+      <select class="fsel" id="f-wap" onchange="render()">
+        <option value="">Todos</option>
+        <option value="si">WhatsApp ✓</option>
+        <option value="no">Sin evidencia ⚠</option>
+      </select>
+      <button class="btn btn-g btn-sm" onclick="clearFilters()">✕ Limpiar</button>
+    </div>
+    <div class="pipeline">
+      <div class="pcol"><div class="pch"><span class="pct">Lead</span><span class="pcnt cl" id="cnt-lead">0</span></div><div id="cards-lead"></div><button class="add-col" id="add-col" onclick="openModal()" style="display:none">+ Añadir lead</button></div>
+      <div class="pcol"><div class="pch"><span class="pct">Negociación</span><span class="pcnt cn" id="cnt-negociacion">0</span></div><div id="cards-negociacion"></div></div>
+      <div class="pcol"><div class="pch"><span class="pct">Cliente activo</span><span class="pcnt ca" id="cnt-activo">0</span></div><div id="cards-activo"></div></div>
+      <div class="pcol"><div class="pch"><span class="pct">Cerrado</span><span class="pcnt cc" id="cnt-cerrado">0</span></div><div id="cards-cerrado"></div></div>
+    </div>
+    <div id="detail-area"></div>
+  </div>
+
+  <!-- COMISIONES -->
+  <div class="panel" id="panel-comisiones">
+    <div class="flujo" id="flujo-block"></div>
+    <div class="sh"><div class="stit">Registro de comisiones</div><div id="com-totales" style="font-size:12px;color:var(--tx3);font-weight:600"></div></div>
+    <div class="tw"><table>
+      <thead><tr><th>Cliente</th><th>Valor (€)</th><th>Captador</th><th>Com. A</th><th>Com. B</th><th>Com. C</th><th>Nexo B→C</th><th>Estado</th></tr></thead>
+      <tbody id="com-tbody"></tbody>
+    </table></div>
+  </div>
+
+  <!-- CLIENTES -->
+  <div class="panel" id="panel-clientes">
+    <div class="abanner">🛡 Protección: vigencia + 24 meses post-contractuales (cl. 22.3). Contacto directo sin A = elusión · penalización mín. 25.000 € (cl. 13 y 14.3).</div>
+    <div class="sh"><div class="stit">Directorio de clientes protegidos</div></div>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="panel" id="panel-alertas">
+    <div class="sh"><div class="stit">Alertas de cumplimiento</div><button class="btn btn-g" onclick="clearAl()">Limpiar todas</button></div>
+    <div id="alist"></div>
+  </div>
+
+  <!-- AJUSTES -->
+  <div class="panel" id="panel-ajustes">
+    <div class="sh"><div class="stit">⚙ Ajustes del sistema</div></div>
+    <div class="settings-grid">
+
+      <div class="scard">
+        <div class="scard-title"><span>💰</span> Porcentajes de comisión</div>
+        <div class="srow">
+          <div><div>A · Soter Capital</div><div class="srow-sub">Comisión base (cl. 8.2)</div></div>
+          <input type="number" class="pct-input pct-a" id="pct-a" min="0" max="100" step="0.01" oninput="previewPcts()">
+        </div>
+        <div class="srow">
+          <div><div>B · Sub-agente</div><div class="srow-sub">+ nexo automático sobre todas las ops. de C (cl. 8.4)</div></div>
+          <input type="number" class="pct-input pct-b" id="pct-b" min="0" max="100" step="0.01" oninput="previewPcts()">
+        </div>
+        <div class="srow">
+          <div><div>C · Sub-agente</div><div class="srow-sub">% sobre comisión de B</div></div>
+          <input type="number" class="pct-input pct-c" id="pct-c" min="0" max="100" step="0.01" oninput="previewPcts()">
+        </div>
+        <div class="info-box" id="pct-preview"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="savePcts()">💾 Guardar</button>
+          <button class="btn btn-g" onclick="resetPcts()">↺ Restablecer contrato</button>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-title"><span>🔐</span> Contraseña de administrador</div>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Cambia la contraseña del rol A. El cambio es inmediato y se aplica a todos los dispositivos.</p>
+        <div class="pass-form">
+          <div class="field" style="margin:0"><label>Contraseña actual</label><input type="password" class="pass-input" id="pass-old" placeholder="Contraseña actual"></div>
+          <div class="field" style="margin:0"><label>Nueva contraseña</label><input type="password" class="pass-input" id="pass-new" placeholder="Nueva contraseña (mín. 3 caracteres)"></div>
+          <div class="field" style="margin:0"><label>Confirmar nueva</label><input type="password" class="pass-input" id="pass-conf" placeholder="Repite la nueva contraseña"></div>
+          <div class="err-msg" id="pass-err"></div>
+          <div class="ok-msg" id="pass-ok">✓ Contraseña cambiada correctamente.</div>
+          <button class="btn btn-p" onclick="changePass()">Cambiar contraseña</button>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-title"><span>🗄️</span> Datos</div>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Los datos se sincronizan en tiempo real vía Firebase para todos los usuarios.</p>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-g" onclick="exportCSV()">⬇ Exportar CSV</button>
+          <button class="btn btn-r" onclick="resetData()">⚠ Borrar todos los leads</button>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="scard-title"><span>📋</span> Referencia de cláusulas</div>
+        <div style="font-size:12px;color:var(--tx2);line-height:2">
+          <div><strong style="color:var(--va)">cl. 3</strong> — Solo A dirige el proceso comercial</div>
+          <div><strong style="color:var(--va)">cl. 7</strong> — Lead → Negociación → Activo → Cerrado</div>
+          <div><strong style="color:var(--va)">cl. 8.2</strong> — Estructura de comisiones automática</div>
+          <div><strong style="color:var(--va)">cl. 8.4</strong> — Nexo B→C permanente y automático</div>
+          <div><strong style="color:var(--va)">cl. 8.5</strong> — Devengo solo al cobro efectivo</div>
+          <div><strong style="color:var(--va)">cl. 10.1</strong> — WhatsApp como medio oficial</div>
+          <div><strong style="color:var(--va)">cl. 13</strong> — No elusión: vigencia + 2 años</div>
+          <div><strong style="color:var(--va)">cl. 14.3</strong> — Penalización mín. 25.000 €</div>
+          <div><strong style="color:var(--va)">cl. 22.3</strong> — Comisiones post-contractuales 24 meses</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LEAD -->
+<div class="mov" id="mov">
+  <div class="modal">
+    <div class="mt" id="modal-title">Nuevo lead</div>
+    <input type="hidden" id="edit-id" value="">
+    <div class="field"><label>Nombre del cliente / empresa *</label><input type="text" id="fn" placeholder="Ej: Energías del Norte S.L."></div>
+    <div class="field"><label>Sector</label><input type="text" id="fs" placeholder="Ej: Industria, Logística..."></div>
+    <div class="field"><label>Captado por</label>
+      <select id="fc"><option value="B">B (sub-agente)</option><option value="C">C (sub-agente)</option><option value="A">A (Soter Capital)</option></select></div>
+    <div class="field"><label>Etapa</label>
+      <select id="fet"><option value="lead">Lead</option><option value="negociacion">Negociación</option><option value="activo">Cliente activo</option><option value="cerrado">Cerrado</option></select></div>
+    <div class="field"><label>Valor estimado de operación (€)</label><input type="number" id="fv" placeholder="Ej: 50000" min="0"></div>
+    <div class="field"><label>Estado de cobro</label>
+      <select id="fcob"><option value="pendiente">Pendiente</option><option value="cobrado">Cobrado ✓</option><option value="retenido">Retenido (cl. 15)</option></select></div>
+    <div class="field"><label>Evidencia WhatsApp (cl. 10.1)</label>
+      <select id="fw"><option value="si">Sí — registrada</option><option value="no">No — pendiente</option></select></div>
+    <div class="field"><label>Notas / observaciones</label><textarea id="fno" rows="3" placeholder="Contexto, próximos pasos, condiciones..."></textarea></div>
+    <div class="mbtns">
+      <button class="btn btn-g" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-p" onclick="saveLead()" id="save-btn">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BORRAR -->
+<div class="mov" id="mov-del">
+  <div class="modal modal-sm">
+    <div class="mt">Eliminar registro</div>
+    <div class="del-warn">⚠ Esta acción no se puede deshacer.</div>
+    <p style="font-size:14px;color:var(--tx2);margin-bottom:8px">¿Eliminar <strong id="del-name"></strong>?</p>
+    <div class="mbtns"><button class="btn btn-g" onclick="closeDel()">Cancelar</button><button class="btn btn-r" onclick="confirmDel()">Sí, eliminar</button></div>
+  </div>
+</div>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDoc, getDocs, writeBatch }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWMArudsip3vh6O_MhMiTMXDAh_4dB4Ws",
+  authDomain: "sotercrm.firebaseapp.com",
+  projectId: "sotercrm",
+  storageBucket: "sotercrm.appspot.com",
+  messagingSenderId: "11796529751",
+  appId: "1:11796529751:web:53fce82ab4118da4229912"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── Colecciones ───────────────────────────────────────────────────────────
+const leadsCol   = collection(db, 'leads');
+const configCol  = collection(db, 'config');
+const alertasCol = collection(db, 'alertas');
+
+// ── Estado local ──────────────────────────────────────────────────────────
+window.S = {
+  role: 'B',
+  leads: [],
+  alertas: [],
+  pcts: { a: 15, b: 7.5, c: 3.75 },
+  passHash: '',
+  sel: null,
+  delId: null,
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+const fmt = n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+const fmtD = d => d ? d.split('-').reverse().join('/') : '';
+function protD(d){ if(!d)return'—'; const dt=new Date(d); dt.setFullYear(dt.getFullYear()+2); return dt.toLocaleDateString('es-ES'); }
+const ini = n => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const pA = () => S.pcts.a / 100;
+const pB = () => S.pcts.b / 100;
+const pC = () => S.pcts.c / 100;
+const pRole = () => S.role==='A' ? pA() : S.role==='B' ? pB() : pC();
+
+async function sha256(msg){
+  const b = new TextEncoder().encode(msg);
+  const h = await crypto.subtle.digest('SHA-256', b);
+  return Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+function setSyncState(state){
+  const dot = document.getElementById('sync-dot');
+  dot.className = 'sync-dot ' + state;
+}
+
+// ── Firebase: leer config ─────────────────────────────────────────────────
+async function loadConfig(){
+  const pctDoc  = await getDoc(doc(db,'config','pcts'));
+  const passDoc = await getDoc(doc(db,'config','pass'));
+  if(pctDoc.exists()) S.pcts = pctDoc.data();
+  if(passDoc.exists()){
+    S.passHash = passDoc.data().hash;
+  } else {
+    // Primera vez: guardar hash de "2706"
+    const h = await sha256('2706');
+    S.passHash = h;
+    await setDoc(doc(db,'config','pass'), { hash: h });
+  }
+}
+
+// ── Firebase: escuchar cambios en tiempo real ─────────────────────────────
+function subscribeLeads(){
+  onSnapshot(leadsCol, snap => {
+    S.leads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    render();
+    setSyncState('ok');
+  }, () => setSyncState('err'));
+}
+
+function subscribeConfig(){
+  onSnapshot(doc(db,'config','pcts'), snap => {
+    if(snap.exists()) { S.pcts = snap.data(); render(); syncPctInputs(); }
+  });
+  onSnapshot(doc(db,'config','pass'), snap => {
+    if(snap.exists()) S.passHash = snap.data().hash;
+  });
+}
+
+function subscribeAlertas(){
+  onSnapshot(alertasCol, snap => {
+    S.alertas = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a,b) => (b.ts||'').localeCompare(a.ts||''));
+    document.getElementById('abadge').textContent = S.alertas.length;
+    renderAl();
+  });
+}
+
+// ── Inicialización ────────────────────────────────────────────────────────
+async function init(){
+  setSyncState('loading');
+  try {
+    await loadConfig();
+    subscribeLeads();
+    subscribeConfig();
+    subscribeAlertas();
+    document.getElementById('loading-ov').classList.add('hidden');
+    setRole('B');
+    syncPctInputs();
+  } catch(e){
+    setSyncState('err');
+    document.getElementById('loading-ov').querySelector('.loading-txt').textContent =
+      'Error de conexión. Comprueba internet.';
+  }
+}
+init();
+
+// ── LOCK ──────────────────────────────────────────────────────────────────
+window.tryRole = function(r){
+  if(r==='A'){
+    document.getElementById('lock-input').value='';
+    document.getElementById('lock-err').textContent='';
+    document.getElementById('lock-screen').classList.add('open');
+    setTimeout(()=>document.getElementById('lock-input').focus(),80);
+  } else { setRole(r); }
+};
+
+window.checkPass = async function(){
+  const val = document.getElementById('lock-input').value;
+  const h   = await sha256(val);
+  if(h === S.passHash){
+    document.getElementById('lock-screen').classList.remove('open');
+    setRole('A');
+  } else {
+    document.getElementById('lock-err').textContent = 'Contraseña incorrecta';
+    document.getElementById('lock-input').value = '';
+    document.getElementById('lock-input').focus();
+  }
+};
+
+// ── ROLE / TAB ────────────────────────────────────────────────────────────
+function setRole(r){
+  S.role = r;
+  ['A','B','C'].forEach(x => {
+    document.getElementById('pill-'+x).className = 'rp' + (x===r ? ' r'+x.toLowerCase() : '');
+  });
+  const isA = r === 'A';
+  ['add-btn','add-col'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.style.display = isA ? '' : 'none';
+  });
+  document.getElementById('tab-ajustes').style.display = isA ? '' : 'none';
+  if(!isA && document.getElementById('panel-ajustes').classList.contains('active')) setTab('pipeline');
+  S.sel = null;
+  document.getElementById('detail-area').innerHTML = '';
+  render();
+}
+window.setRole = setRole;
+
+window.setTab = function(t){
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(e=>e.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('panel-'+t).classList.add('active');
+  if(t==='ajustes') syncPctInputs();
+};
+
+window.clearFilters = function(){
+  ['f-search','f-cap','f-eta','f-wap'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  render();
+};
+
+function vis(){
+  let leads = S.leads;
+  if(S.role==='B') leads = leads.filter(l=>l.captador==='B'||l.captador==='C');
+  else if(S.role==='C') leads = leads.filter(l=>l.captador==='C');
+  const fc = document.getElementById('f-cap')?.value||'';
+  const fe = document.getElementById('f-eta')?.value||'';
+  const fw = document.getElementById('f-wap')?.value||'';
+  const fs = (document.getElementById('f-search')?.value||'').toLowerCase();
+  if(fc) leads = leads.filter(l=>l.captador===fc);
+  if(fe) leads = leads.filter(l=>l.etapa===fe);
+  if(fw) leads = leads.filter(l=>l.whatsapp===fw);
+  if(fs) leads = leads.filter(l=>l.nombre.toLowerCase().includes(fs)||l.sector.toLowerCase().includes(fs));
+  return leads;
+}
+
+// ── MODAL LEAD ────────────────────────────────────────────────────────────
+window.openModal = function(id){
+  if(S.role!=='A'){ addAl('bypass','Intento de edición por parte '+S.role+' sin autorización de A (cl. 3).'); return; }
+  document.getElementById('edit-id').value = id||'';
+  if(id){
+    const l = S.leads.find(x=>x.id===id); if(!l) return;
+    document.getElementById('modal-title').textContent = 'Editar lead';
+    document.getElementById('save-btn').textContent = 'Guardar cambios';
+    document.getElementById('fn').value  = l.nombre;
+    document.getElementById('fs').value  = l.sector;
+    document.getElementById('fc').value  = l.captador;
+    document.getElementById('fet').value = l.etapa;
+    document.getElementById('fv').value  = l.valor;
+    document.getElementById('fcob').value= l.cobro||'pendiente';
+    document.getElementById('fw').value  = l.whatsapp;
+    document.getElementById('fno').value = l.notas||'';
+  } else {
+    document.getElementById('modal-title').textContent = 'Nuevo lead';
+    document.getElementById('save-btn').textContent = 'Registrar';
+    ['fn','fs','fno'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fv').value='';
+    document.getElementById('fc').value='B';
+    document.getElementById('fet').value='lead';
+    document.getElementById('fcob').value='pendiente';
+    document.getElementById('fw').value='si';
+  }
+  document.getElementById('mov').classList.add('open');
+  setTimeout(()=>document.getElementById('fn').focus(),80);
+};
+window.closeModal = function(){ document.getElementById('mov').classList.remove('open'); };
+
+window.saveLead = async function(){
+  const nombre = document.getElementById('fn').value.trim();
+  if(!nombre){ document.getElementById('fn').focus(); return; }
+  const eid = document.getElementById('edit-id').value;
+  const data = {
+    nombre,
+    sector:   document.getElementById('fs').value.trim()||'Sin especificar',
+    captador: document.getElementById('fc').value,
+    etapa:    document.getElementById('fet').value,
+    valor:    parseFloat(document.getElementById('fv').value)||0,
+    cobro:    document.getElementById('fcob').value,
+    whatsapp: document.getElementById('fw').value,
+    notas:    document.getElementById('fno').value.trim(),
+  };
+  setSyncState('loading');
+  if(eid){
+    await setDoc(doc(db,'leads',eid), data, { merge: true });
+  } else {
+    data.fecha = new Date().toISOString().split('T')[0];
+    const ref = doc(leadsCol);
+    await setDoc(ref, data);
+    if(data.whatsapp==='no') addAl('evidencia','"'+data.nombre+'" registrado sin evidencia WhatsApp (cl. 10.1 y 11).');
+  }
+  closeModal();
+  if(eid) showD(eid);
+};
+
+window.openDel = function(id){
+  if(S.role!=='A'){ addAl('bypass','Intento de eliminación por parte '+S.role+' (cl. 3).'); return; }
+  S.delId = id;
+  const l = S.leads.find(x=>x.id===id);
+  document.getElementById('del-name').textContent = l ? l.nombre : 'este registro';
+  document.getElementById('mov-del').classList.add('open');
+};
+window.closeDel = function(){ document.getElementById('mov-del').classList.remove('open'); S.delId=null; };
+window.confirmDel = async function(){
+  if(!S.delId) return;
+  await deleteDoc(doc(db,'leads',S.delId));
+  if(S.sel===S.delId){ S.sel=null; document.getElementById('detail-area').innerHTML=''; }
+  closeDel();
+};
+
+window.avanzar = async function(id, etapa){
+  if(S.role!=='A'){ addAl('bypass','Avance de etapa por parte '+S.role+' (cl. 3).'); return; }
+  await setDoc(doc(db,'leads',id), { etapa }, { merge: true });
+  showD(id);
+};
+
+// ── ALERTAS ───────────────────────────────────────────────────────────────
+async function addAl(tipo, msg){
+  const ref = doc(alertasCol);
+  await setDoc(ref, { tipo, msg, ts: new Date().toISOString() });
+}
+window.addAl = addAl;
+
+window.clearAl = async function(){
+  const snap = await getDocs(alertasCol);
+  const batch = writeBatch(db);
+  snap.docs.forEach(d => batch.delete(d.ref));
+  await batch.commit();
+};
+
+window.deleteAlerta = async function(id){
+  await deleteDoc(doc(db,'alertas',id));
+};
+
+// ── PORCENTAJES ───────────────────────────────────────────────────────────
+function syncPctInputs(){
+  const a=document.getElementById('pct-a'); if(a) a.value=S.pcts.a;
+  const b=document.getElementById('pct-b'); if(b) b.value=S.pcts.b;
+  const c=document.getElementById('pct-c'); if(c) c.value=S.pcts.c;
+  previewPcts();
+}
+window.syncPctInputs = syncPctInputs;
+
+window.previewPcts = function(){
+  const a=parseFloat(document.getElementById('pct-a')?.value)||0;
+  const b=parseFloat(document.getElementById('pct-b')?.value)||0;
+  const c=parseFloat(document.getElementById('pct-c')?.value)||0;
+  const prev=document.getElementById('pct-preview');
+  if(prev) prev.innerHTML=`Vista previa para 100.000 €:<br>
+    A → <strong>${fmt(100000*a/100)}</strong> &nbsp;·&nbsp;
+    B → <strong>${fmt(100000*b/100)}</strong> &nbsp;·&nbsp;
+    C → <strong>${fmt(100000*c/100)}</strong><br>
+    <span style="opacity:.8;font-size:11px">B recibe también ${fmt(100000*b/100)} como nexo sobre operaciones de C (cl. 8.4)</span>`;
+};
+
+window.savePcts = async function(){
+  const a=parseFloat(document.getElementById('pct-a').value)||0;
+  const b=parseFloat(document.getElementById('pct-b').value)||0;
+  const c=parseFloat(document.getElementById('pct-c').value)||0;
+  await setDoc(doc(db,'config','pcts'), { a, b, c });
+  // snapshot listener actualizará S.pcts automáticamente
+};
+
+window.resetPcts = async function(){
+  if(!confirm('¿Restablecer los porcentajes del contrato (15% / 7,5% / 3,75%)?')) return;
+  await setDoc(doc(db,'config','pcts'), { a:15, b:7.5, c:3.75 });
+};
+
+// ── CONTRASEÑA ────────────────────────────────────────────────────────────
+window.changePass = async function(){
+  const old  = document.getElementById('pass-old').value;
+  const nw   = document.getElementById('pass-new').value;
+  const cf   = document.getElementById('pass-conf').value;
+  const errEl= document.getElementById('pass-err');
+  const okEl = document.getElementById('pass-ok');
+  errEl.classList.remove('show'); okEl.classList.remove('show');
+  const oldH = await sha256(old);
+  if(oldH !== S.passHash){ errEl.textContent='La contraseña actual no es correcta.'; errEl.classList.add('show'); return; }
+  if(nw.length<3){ errEl.textContent='Mínimo 3 caracteres.'; errEl.classList.add('show'); return; }
+  if(nw!==cf){ errEl.textContent='Las contraseñas nuevas no coinciden.'; errEl.classList.add('show'); return; }
+  const newH = await sha256(nw);
+  await setDoc(doc(db,'config','pass'), { hash: newH });
+  ['pass-old','pass-new','pass-conf'].forEach(id=>document.getElementById(id).value='');
+  okEl.classList.add('show');
+};
+
+// ── EXPORT ────────────────────────────────────────────────────────────────
+window.exportCSV = function(){
+  const rows=[['ID','Nombre','Sector','Captador','Etapa','Valor €','WhatsApp','Cobro','Fecha','Notas',
+    `Com A ${S.pcts.a}%`,`Com B ${S.pcts.b}%`,`Com C ${S.pcts.c}%`]];
+  S.leads.forEach(l=>rows.push([l.id,l.nombre,l.sector,l.captador,l.etapa,l.valor,
+    l.whatsapp,l.cobro||'pendiente',l.fecha,l.notas||'',
+    Math.round(l.valor*pA()),Math.round(l.valor*pB()),Math.round(l.valor*pC())]));
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='soter_crm_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+};
+
+window.resetData = async function(){
+  if(!confirm('⚠ ¿Borrar TODOS los leads? Esta acción no se puede deshacer.')) return;
+  const snap=await getDocs(leadsCol);
+  const batch=writeBatch(db);
+  snap.docs.forEach(d=>batch.delete(d.ref));
+  await batch.commit();
+};
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function renderStats(){
+  const v=vis();
+  const act=v.filter(l=>l.etapa==='activo'||l.etapa==='cerrado');
+  const ce=act.reduce((s,l)=>s+l.valor*pRole(),0);
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat"><div class="slbl">Leads totales</div><div class="sval">${v.length}</div><div class="ssub">en pipeline</div></div>
+    <div class="stat"><div class="slbl">Clientes activos</div><div class="sval">${act.length}</div><div class="ssub">formalizados</div></div>
+    <div class="stat"><div class="slbl">Valor pipeline</div><div class="sval" style="font-size:20px">${fmt(v.reduce((s,l)=>s+l.valor,0))}</div><div class="ssub">estimado total</div></div>
+    <div class="stat"><div class="slbl">Comisión ${S.role} estimada</div><div class="sval" style="font-size:18px">${fmt(ce)}</div><div class="ssub">${S.pcts[S.role.toLowerCase()]}% sobre activos</div></div>`;
+}
+
+function renderPipeline(){
+  const v=vis(); const isA=S.role==='A';
+  ['lead','negociacion','activo','cerrado'].forEach(e=>{
+    const g=v.filter(l=>l.etapa===e);
+    document.getElementById('cnt-'+e).textContent=g.length;
+    document.getElementById('cards-'+e).innerHTML=g.map(l=>`
+      <div class="kcard${S.sel===l.id?' sel':''}" onclick="showD('${l.id}')">
+        <div class="kcard-name">${l.nombre}</div>
+        <div class="kcard-row">
+          <span class="op o${l.captador.toLowerCase()}">${l.captador}</span>
+          <span class="kv">${fmt(l.valor*pRole())}</span>
+        </div>
+        ${l.notas?`<div class="knote">${l.notas}</div>`:''}
+        ${isA?`<div class="kcard-actions">
+          <button class="iac" onclick="event.stopPropagation();openModal('${l.id}')" title="Editar">✏️</button>
+          <button class="iac" onclick="event.stopPropagation();openDel('${l.id}')" title="Eliminar">🗑️</button>
+        </div>`:''}
+      </div>`).join('');
+  });
+}
+
+window.showD = function(id){
+  S.sel=id;
+  const l=S.leads.find(x=>x.id===id); if(!l) return;
+  const isA=S.role==='A';
+  const etps=[['lead','Lead'],['negociacion','Negociación'],['activo','Cliente activo'],['cerrado','Cerrado']];
+  const cobroLabel={pendiente:'Pendiente',cobrado:'Cobrado ✓',retenido:'Retenido (cl. 15)'}[l.cobro||'pendiente'];
+  const cobroColor={pendiente:'var(--aa)',cobrado:'var(--va)',retenido:'var(--ra)'}[l.cobro||'pendiente'];
+  document.getElementById('detail-area').innerHTML=`
+    <div class="dw">
+      <div class="dh">
+        <div class="dn">${l.nombre}</div>
+        <div class="dh-btns">
+          ${isA?`<button class="btn btn-b btn-sm" onclick="openModal('${l.id}')">✏️ Editar</button>
+          <button class="btn btn-r btn-sm" onclick="openDel('${l.id}')">🗑️ Eliminar</button>`:''}
+          <button class="xbtn" onclick="S.sel=null;document.getElementById('detail-area').innerHTML=''">×</button>
+        </div>
+      </div>
+      ${l.whatsapp==='no'?'<div class="warn">⚠ Sin evidencia WhatsApp — registrar comunicación fehaciente (cl. 10.1 y 11)</div>':''}
+      ${l.captador==='C'?`<div class="nexo">📋 <strong>Nexo obligatorio (cl. 8.4):</strong> B percibe automáticamente el ${S.pcts.b}% sobre esta operación. Toda comisión de C siempre pasa por B.</div>`:''}
+      <div class="dgrid">
+        <div class="df"><label>Captado por</label><span class="op o${l.captador.toLowerCase()}" style="font-size:13px">${l.captador}</span></div>
+        <div class="df"><label>Sector</label><span>${l.sector}</span></div>
+        <div class="df"><label>Valor estimado</label><span>${fmt(l.valor)}</span></div>
+        <div class="df"><label>Fecha registro</label><span>${fmtD(l.fecha)}</span></div>
+        <div class="df"><label>Estado cobro</label><span style="color:${cobroColor}">${cobroLabel}</span></div>
+        <div class="df"><label>WhatsApp (cl. 10.1)</label><span style="color:${l.whatsapp==='si'?'var(--va)':'var(--ra)'}">${l.whatsapp==='si'?'✓ Registrada':'⚠ Pendiente'}</span></div>
+        <div class="df"><label>Protección hasta (cl. 22.3)</label><span style="color:var(--va)">${protD(l.fecha)}</span></div>
+        <div class="df"><label>Etapa actual</label><span>${{lead:'Lead',negociacion:'Negociación',activo:'Cliente activo',cerrado:'Cerrado'}[l.etapa]}</span></div>
+        ${l.notas?`<div class="df full"><label>Notas</label><span>${l.notas}</span></div>`:''}
+      </div>
+      <div class="cbs">
+        <div class="cb cba"><label>Com. A · ${S.pcts.a}%</label><span>${fmt(l.valor*pA())}</span></div>
+        <div class="cb cbb"><label>Com. B · ${S.pcts.b}%${l.captador==='C'?' + nexo':''}</label><span>${fmt(l.valor*pB())}</span></div>
+        <div class="cb cbc"><label>Com. C · ${S.pcts.c}%</label><span>${l.captador==='C'?fmt(l.valor*pC()):'—'}</span></div>
+      </div>
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:8px">Mover a etapa${isA?'':' (solo A puede cambiar)'}:</div>
+      <div class="stage-row">${etps.map(([e,lb])=>`<button class="sbtn${l.etapa===e?' sact':''}" onclick="${isA?`avanzar('${id}','${e}')`:'void 0'}" ${isA?'':'disabled'}>${lb}</button>`).join('')}</div>
+    </div>`;
+  renderPipeline();
+};
+
+function renderCom(){
+  const v=vis();
+  const act=v.filter(l=>l.etapa==='activo'||l.etapa==='cerrado');
+  let ta=0,tb=0,tc=0;
+  document.getElementById('flujo-block').innerHTML=`
+    <div class="fnode fna"><div class="flbl">A · Soter Capital</div><div class="fpct">${S.pcts.a}%</div><div class="fsub">Comisión base</div></div>
+    <div class="farr">→</div>
+    <div class="fnode fnb"><div class="flbl">B · Sub-agente</div><div class="fpct">${S.pcts.b}%</div><div class="fsub">nexo cl. 8.4</div></div>
+    <div class="farr">→</div>
+    <div class="fnode fnc"><div class="flbl">C · Sub-agente</div><div class="fpct">${S.pcts.c}%</div><div class="fsub">50% de B</div></div>
+    <div class="fninfo">
+      <strong style="color:var(--ba)">⚠ Flujo obligatorio — Cláusula 8.4</strong><br><br>
+      Toda comisión de C <strong>siempre pasa por B</strong>. B percibe el <strong>${S.pcts.b}%</strong> automáticamente sobre <em>todas</em> las operaciones generadas por C, sin necesidad de acreditar intervención concreta.<br><br>
+      <span style="color:var(--tx3);font-size:11px">Nexo permanente durante vigencia + 24 meses post-contractuales (cl. 8.4 y 22.3).</span>
+    </div>`;
+
+  document.getElementById('com-tbody').innerHTML=act.length?act.map(l=>{
+    ta+=l.valor*pA(); tb+=l.valor*pB();
+    if(l.captador==='C') tc+=l.valor*pC();
+    const cob=l.cobro||'pendiente';
+    const spC={cobrado:'spc',pendiente:'spp',retenido:'spr'}[cob]||'spp';
+    const spT={cobrado:'Cobrado',pendiente:'Pendiente',retenido:'Retenido'}[cob]||'Pendiente';
+    const nexo=l.captador==='C';
+    return`<tr>
+      <td><strong>${l.nombre}</strong><br><span style="font-size:11px;color:var(--tx3)">${l.sector}</span></td>
+      <td style="font-weight:600">${fmt(l.valor)}</td>
+      <td><span class="op o${l.captador.toLowerCase()}">${l.captador}</span></td>
+      <td style="color:var(--va);font-weight:700">${fmt(l.valor*pA())}</td>
+      <td style="color:var(--ba);font-weight:700">${fmt(l.valor*pB())}</td>
+      <td style="color:var(--ma);font-weight:700">${nexo?fmt(l.valor*pC()):'<span style="color:var(--tx3)">—</span>'}</td>
+      <td>${nexo?`<span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bc);color:var(--ba)">✓ Automático</span>`:'<span style="color:var(--tx3)">—</span>'}</td>
+      <td><span class="sp ${spC}">${spT}</span></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--tx3)">No hay operaciones activas todavía</td></tr>`;
+  document.getElementById('com-totales').textContent=`A: ${fmt(ta)} · B: ${fmt(tb)} · C: ${fmt(tc)}`;
+}
+
+function renderClientes(){
+  const v=vis();
+  document.getElementById('cgrid').innerHTML=v.length?v.map(l=>{
+    const etaC={lead:'var(--ba)',negociacion:'var(--aa)',activo:'var(--va)',cerrado:'var(--ga)'}[l.etapa];
+    const etaB={lead:'var(--bc)',negociacion:'var(--ac)',activo:'var(--vc)',cerrado:'var(--gc)'}[l.etapa];
+    const eta={lead:'Lead',negociacion:'Negociación',activo:'Cliente activo',cerrado:'Cerrado'}[l.etapa];
+    return`<div class="ccard" onclick="setTab('pipeline');showD('${l.id}')">
+      <div class="cch"><div class="av av-${l.captador.toLowerCase()}">${ini(l.nombre)}</div>
+        <div><div style="font-weight:700;font-size:14px">${l.nombre}</div>
+        <div style="font-size:12px;color:var(--tx3)">${l.sector} · <strong>${l.captador}</strong></div></div>
+      </div>
+      <div class="cmeta">
+        <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:${etaB};color:${etaC}">${eta}</span>
+        <span class="ptag">🛡 hasta ${protD(l.fecha)}</span>
+      </div>
+      ${l.notas?`<div style="font-size:12px;color:var(--tx3);margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.notas}</div>`:''}
+    </div>`;
+  }).join(''):`<div class="empty">Sin clientes visibles</div>`;
+}
+
+function renderAl(){
+  document.getElementById('abadge').textContent=S.alertas.length;
+  document.getElementById('alist').innerHTML=S.alertas.length?S.alertas.map(a=>`
+    <div class="al al${a.tipo==='bypass'?'bp':'ev'}">
+      <span style="font-size:18px;flex-shrink:0">${a.tipo==='bypass'?'🚫':'⚠'}</span>
+      <div class="al-bd">
+        <div class="al-ti">${a.tipo==='bypass'?'Alerta bypass / elusión (cl. 13)':'Evidencia pendiente (cl. 10.1)'}</div>
+        <div class="al-de">${a.msg}</div>
+        <div style="font-size:10px;margin-top:4px;opacity:.7">${new Date(a.ts).toLocaleString('es-ES')}</div>
+      </div>
+      <button class="alcls" onclick="deleteAlerta('${a.id}')">×</button>
+    </div>`).join(''):`<div class="empty"><div style="font-size:36px;margin-bottom:10px">✓</div>Sin alertas activas</div>`;
+}
+
+window.render = function(){ renderStats(); renderPipeline(); renderCom(); renderClientes(); };
+function render(){ renderStats(); renderPipeline(); renderCom(); renderClientes(); }
+
+</script>
+</body>
+</html>
